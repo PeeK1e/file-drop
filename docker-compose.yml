@@ -23,6 +23,15 @@ services:
     depends_on:
       - db
 
+  file_cleaner:
+    image: peek1e/file-cleaner:latest
+    build: ./src/cleaner
+    volumes:
+     #- ./dbSettings.json:/app/db_settings/dbSettings.json
+      - files:/app/storage #this may be configurable in the future
+    depends_on:
+      - db
+      - file_drop
 
 volumes:
   files:
