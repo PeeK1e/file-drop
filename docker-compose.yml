@@ -1,0 +1,29 @@
+version: '3.3'
+services:
+  db:
+    image: postgres:latest
+    environment:
+      POSTGRES_PASSWORD:  "CHANGE_ME"
+      POSTGRES_USER:  "postgres"
+      POSTGRES_DB:  "uploads"
+    volumes:
+      #- pgdata:/var/lib
+      - ./src/.psql-init-scripts/:/docker-entrypoint-initdb.d/
+    ports:
+      - "5432:5432" #can be removed, only needed for testing purposes
+
+  file_drop:
+    image: peek1e/file-drop:latest
+    build: ./src/server
+    volumes:
+     #- ./dbSettings.json:/app/db_settings/dbSettings.json
+      - files:/app/storage #this may be configurable in the future
+    ports:
+      - 8080:8080
+    depends_on:
+      - db
+
+
+volumes:
+  files:
+  pgdata:

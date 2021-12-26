@@ -1,7 +1,0 @@
-{
-  "hostname": "127.0.0.1",
-  "port": 1337,
-  "userName": "upload",
-  "userPassword": "CHANGE_ME",
-  "dbname":"uploaddb"
-}

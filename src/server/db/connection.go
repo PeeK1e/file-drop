@@ -14,6 +14,7 @@ var (
 	db        *sql.DB
 	dbSetting *dbSettings
 	lock      *sync.Mutex
+	path      string
 )
 
 type dbSettings struct {
@@ -22,11 +23,11 @@ type dbSettings struct {
 	UserName   string `json:"userName"`
 	UserPasswd string `json:"userPasswd"`
 	DBName     string `json:"DBName"`
+	SSLMode    string `json:"SSLMode"`
 }
 
 func init() {
-	path := ""
-	flag.StringVar(&path, "db-conf", "./server/template/dbSettings.json", "Config file location for the Database")
+	flag.StringVar(&path, "db-conf", "./db_settings/dbSettings.json", "Config file location for the Database")
 
 	file, err := ioutil.ReadFile(path)
 	log.Printf("Json File Content: %s", file)
@@ -48,12 +49,13 @@ func GetInstance() *sql.DB {
 		defer lock.Unlock()
 
 		connString := fmt.Sprintf(
-			"host=%s port=%d user=%s password=%s dbname=%s",
+			"host=%s port=%d user=%s password=%s dbname=%s sslmode=%s",
 			dbSetting.Hostname,
 			dbSetting.Port,
 			dbSetting.UserName,
 			dbSetting.UserPasswd,
-			dbSetting.DBName)
+			dbSetting.DBName,
+			dbSetting.SSLMode)
 
 		err := error(nil)
 		db, err = sql.Open("postgres", connString)
