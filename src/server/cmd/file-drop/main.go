@@ -3,9 +3,9 @@ package main
 import (
 	"flag"
 	"fmt"
-	"git.peek1e.eu/peek1e/file_drop/db"
-	"git.peek1e.eu/peek1e/file_drop/routes"
-	_ "git.peek1e.eu/peek1e/file_drop/routes"
+	"git.peek1e.eu/peek1e/file_drop/server/db"
+	"git.peek1e.eu/peek1e/file_drop/server/routes"
+	_ "git.peek1e.eu/peek1e/file_drop/server/routes"
 	_ "github.com/lib/pq"
 	"log"
 	"math/rand"
