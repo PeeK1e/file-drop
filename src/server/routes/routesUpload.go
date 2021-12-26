@@ -2,7 +2,7 @@ package routes
 
 import (
 	"encoding/json"
-	"git.peek1e.eu/peek1e/file_drop/server/models"
+	"git.peek1e.eu/peek1e/file-drop/server/models"
 	"io"
 	"log"
 	"math/rand"

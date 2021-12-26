@@ -3,7 +3,7 @@ package models
 import (
 	"errors"
 	"fmt"
-	"git.peek1e.eu/peek1e/file_drop/server/db"
+	"git.peek1e.eu/peek1e/file-drop/server/db"
 )
 
 func GetFileByID(id string) (name string, path string, err error) {

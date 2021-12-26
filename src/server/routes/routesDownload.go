@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"git.peek1e.eu/peek1e/file_drop/server/models"
+	"git.peek1e.eu/peek1e/file-drop/server/models"
 	"io"
 	"io/ioutil"
 	"log"

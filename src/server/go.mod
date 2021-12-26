@@ -1,4 +1,4 @@
-module git.peek1e.eu/peek1e/file_drop/server
+module git.peek1e.eu/peek1e/file-drop/server
 
 go 1.17
 
