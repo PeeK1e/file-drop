@@ -100,6 +100,7 @@ func getRandomPathName() (string, string) {
 		pathParts[2] += string(letters[rand.Intn(len(letters))])
 	}
 
+	//TODO: storage path should be variable
 	dirPathChild := "./storage/" + pathParts[0] + "/" + pathParts[1]
 	filePath := "./storage/" + pathParts[0] + "/" + pathParts[1] + "/" + pathParts[2]
 

@@ -1,3 +1,4 @@
+//Original File/Code By CodingNepal - youtube.com/codingnepal
 const form = document.querySelector("form"),
 fileInput = document.querySelector(".file-input"),
 progressArea = document.querySelector(".progress-area"),
@@ -117,7 +118,7 @@ function callback(string) {
                             <div class="content upload">
                               <i class="fas fa-file-alt"></i>
                               <div class="details">
-                                <span class="error">Upload Failed!</span>
+                                <span class="error">Upload Failed: ${jsonStr.reason}</span>
                               </div>
                             </div>
                             <i class="fas fa-check"></i>
