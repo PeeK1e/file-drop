@@ -1,0 +1,8 @@
+{
+  "hostname": "db",
+  "port": 5432,
+  "userName": "postgres",
+  "userPasswd": "CHANGE_ME",
+  "dbname":"uploads",
+  "sslmode": "disable"
+}
