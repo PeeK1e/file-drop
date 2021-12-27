@@ -27,6 +27,7 @@ func init() {
 	fmt.Println("STARTING UP")
 	flag.StringVar(&setting.Port, "p", "8080", "Sets the listening port of the Webserver")
 	flag.StringVar(&setting.Address, "addr", "", "Sets a specific address to listen on e.g. only localhost")
+	flag.Parse()
 	//flag.StringVar(&setting.DataDir, "d", "./storage", "Sets the Data Directory Path where files are uploaded to")
 	setting.ServeAddress = setting.Address + ":" + setting.Port
 

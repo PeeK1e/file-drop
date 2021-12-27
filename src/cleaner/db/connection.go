@@ -28,6 +28,7 @@ type dbSettings struct {
 
 func init() {
 	flag.StringVar(&path, "db-conf", "./db_settings/dbSettings.json", "Config file location for the Database")
+	flag.Parse()
 
 	file, err := ioutil.ReadFile(path)
 	log.Printf("Json File Content: %s", file)
