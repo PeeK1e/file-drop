@@ -26,7 +26,11 @@ func RemoveExpiredFiles() {
 		return
 	}
 
+	/*	TODO: cleaner way of deleting file, on failed delete should not remove entry from DB
+	 *	Create A Log Entry in the database with failed file deletions?
+	 */
 	for rows.Next() {
+
 		path := ""
 		rows.Scan(&path)
 		util.DeleteFile(path)
