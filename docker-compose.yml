@@ -7,10 +7,8 @@ services:
       POSTGRES_USER:  "postgres"
       POSTGRES_DB:  "uploads"
     volumes:
-      #- pgdata:/var/lib
+      - pgdata:/var/lib/postgresql/data
       - ./src/.psql-init-scripts/:/docker-entrypoint-initdb.d/
-    ports:
-      - "5432:5432" #can be removed, only needed for testing purposes
 
   file_drop:
     image: peek1e/file-drop:latest
