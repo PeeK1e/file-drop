@@ -45,16 +45,19 @@ func PreviewFile(w http.ResponseWriter, r *http.Request) {
 	file, err1 := ioutil.ReadFile(path)
 	f, err2 := os.OpenFile(path, os.O_RDONLY, 0640)
 	stat, err3 := f.Stat()
+	defer f.Close()
 	if err1 != nil || err2 != nil || err3 != nil {
 		log.Printf("Couldn't retrieve File %s :: %s :: %s", err1, err2, err3)
 		writeHeader(w, http.StatusInternalServerError)
 		return
 	}
+
 	cType := http.DetectContentType(file)
 	w.Header().Set("Content-Type", cType)
 	w.Header().Set("Content-Disposition", "inline; filename=\""+name+"\"")
 	w.Header().Set("Content-Transfer-Encoding", "binary")
 	w.Header().Set("Content-Length", strconv.FormatInt(stat.Size(), 10))
+	w.Header().Set("X-Content-Type-Options", "nosniff")
 	w.WriteHeader(http.StatusOK)
 	_, _ = w.Write(file)
 }

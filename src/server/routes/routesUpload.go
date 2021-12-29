@@ -8,6 +8,7 @@ import (
 	"math/rand"
 	"net/http"
 	"os"
+	"strings"
 )
 
 type uploadResponse struct {
@@ -35,7 +36,6 @@ func UploadFile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	filePath, dirPathChild := getRandomPathName()
-	id := createRandomId(10)
 
 	err = os.MkdirAll(dirPathChild, 0764)
 	if err != nil {
@@ -55,6 +55,10 @@ func UploadFile(w http.ResponseWriter, r *http.Request) {
 		})
 		return
 	}
+
+	filename := strings.Split(fileHeader.Filename, ".")
+	fileExt := filename[len(filename)-1]
+	id := createRandomId(10, fileExt)
 
 	err = models.SaveFile(id, fileHeader.Filename, filePath)
 	if err != nil {
@@ -113,16 +117,17 @@ func getRandomPathName() (string, string) {
 	return filePath, dirPathChild
 }
 
-func createRandomId(length int) string {
+func createRandomId(length int, fileExt string) string {
 	str := ""
 	for i := 0; i < length; i++ {
 		str += string(letters[rand.Intn(len(letters))])
 	}
+	str += "." + fileExt
 
 	ok, err := models.IsFileIdOk(str)
 	if !ok {
 		log.Printf("Already exists or an error occured: %s", err)
-		return createRandomId(length)
+		return createRandomId(length, fileExt)
 	}
 
 	return str
