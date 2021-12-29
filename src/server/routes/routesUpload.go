@@ -58,7 +58,12 @@ func UploadFile(w http.ResponseWriter, r *http.Request) {
 
 	filename := strings.Split(fileHeader.Filename, ".")
 	fileExt := filename[len(filename)-1]
-	id := createRandomId(10, fileExt)
+	id := ""
+	if filename[0] != fileExt {
+		id = createRandomId(10, fileExt)
+	} else {
+		id = createRandomId(10, "")
+	}
 
 	err = models.SaveFile(id, fileHeader.Filename, filePath)
 	if err != nil {
@@ -122,7 +127,9 @@ func createRandomId(length int, fileExt string) string {
 	for i := 0; i < length; i++ {
 		str += string(letters[rand.Intn(len(letters))])
 	}
-	str += "." + fileExt
+	if fileExt != "" {
+		str += "." + fileExt
+	}
 
 	ok, err := models.IsFileIdOk(str)
 	if !ok {

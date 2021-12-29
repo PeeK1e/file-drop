@@ -3,8 +3,6 @@ const form = document.querySelector("form"),
 fileInput = document.querySelector(".file-input"),
 progressArea = document.querySelector(".progress-area"),
 uploadedArea = document.querySelector(".uploaded-area");
-let fileSize;
-let fileName;
 
 // form click event
 form.addEventListener("click", () =>{
@@ -13,31 +11,26 @@ form.addEventListener("click", () =>{
 
 //prevent default drag n drop behavior
 function dragOverHandler(ev) {
-  console.log('File(s) in drop zone');
-  // Prevent default behavior (Prevent file from being opened)
   ev.preventDefault();
 }
 
 function dropHandler(ev) {
-  console.log('File(s) dropped');
-
   // Prevent default behavior (Prevent file from being opened)
   ev.preventDefault();
 
   if (ev.dataTransfer.items) {
     // Use DataTransferItemList interface to access the file(s)
-    for (var i = 0; i < ev.dataTransfer.items.length; i++) {
-      // If dropped items aren't files, reject them
-      if (ev.dataTransfer.items[i].kind === 'file') {
-        var file = ev.dataTransfer.items[i].getAsFile();
-        console.log('... file[' + i + '].name = ' + file.name);
-      }
+    // If dropped items aren't files, reject them
+    if (ev.dataTransfer.items[0].kind === 'file') {
+      let dT = new DataTransfer();
+      dT.items.add(ev.dataTransfer.items[0].getAsFile())
+      fileInput.files = dT.files
+      uploadFile(dT.files[0].name)
     }
   } else {
     // Use DataTransfer interface to access the file(s)
-    for (var i = 0; i < ev.dataTransfer.files.length; i++) {
-      console.log('... file[' + i + '].name = ' + ev.dataTransfer.files[i].name);
-    }
+    fileInput.files = ev.dataTransfer.files;
+    uploadFile(ev.dataTransfer.files[0].name)
   }
 }
 
@@ -59,12 +52,13 @@ fileInput.onchange = ({target})=>{
 }
 
 function uploadFile(name){
-  fileName = name;
+  let fileName = name;
+  let fileSize;
   let xhr = new XMLHttpRequest(); //AJAX request
   xhr.open("POST", "/upload"); //sending post request to the specified URL
   xhr.onreadystatechange = function() {
     if (xhr.readyState === 4) {
-        callback(xhr.responseText);
+      callback(xhr.responseText, fileName, fileSize);
     }
   }
   xhr.upload.addEventListener("progress", ({loaded, total}) =>{ //file uploading progress event
@@ -84,11 +78,11 @@ function uploadFile(name){
                             </div>
                           </div>
                         </li>`;
-    // uploadedArea.innerHTML = ""; //uncomment this line if you don't want to show upload history
     uploadedArea.classList.add("onprogress");
     progressArea.innerHTML = progressHTML;
     if(loaded == total){
       progressArea.innerHTML = "";
+      //toRemove += uploadedArea.getElementsByClassName("onprogress")[0];
       uploadedArea.classList.remove("onprogress");
     }
   });
@@ -96,7 +90,7 @@ function uploadFile(name){
   xhr.send(data);
 }
 
-function callback(string) {
+function callback(string, fileName, fileSize) {
   let jsonStr = JSON.parse(string)
   let uploadedHTML;
   console.log(jsonStr)
