@@ -9,6 +9,8 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./src/.psql-init-scripts/:/docker-entrypoint-initdb.d/
+    ports:
+      - 5432:5432
 
   file_drop:
     image: peek1e/file-drop:latest
