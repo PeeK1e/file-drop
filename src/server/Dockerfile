@@ -3,14 +3,14 @@ FROM golang:latest AS base-build
 WORKDIR /build
 COPY go.mod .
 
-RUN CGO_ENABLED=0 GOARCH=amd64 GOOS=linux go mod download
+RUN CGO_ENABLED=0 GOARCH=$TARGETARCH GOOS=linux go mod download
 
 FROM base-build AS build
 
 WORKDIR /build
 COPY . .
 
-RUN CGO_ENABLED=0 GOARCH=amd64 GOOS=linux go build -o filedrop cmd/file-drop/main.go
+RUN CGO_ENABLED=0 GOARCH=$TARGETARCH GOOS=linux go build -o filedrop cmd/file-drop/main.go
 
 FROM scratch
 WORKDIR /app
