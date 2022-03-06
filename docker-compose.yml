@@ -9,6 +9,7 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./src/.psql-init-scripts/:/docker-entrypoint-initdb.d/
+    restart: unless-stopped
 
   file_drop:
     image: peek1e/file-drop:latest
@@ -18,6 +19,7 @@ services:
       - files:/app/storage #this may be configurable in the future
     ports:
       - 8080:8080
+    restart: unless-stopped
     depends_on:
       - db
 
@@ -27,6 +29,7 @@ services:
     volumes:
      #- ./dbSettings.json:/app/db_settings/dbSettings.json
       - files:/app/storage #this may be configurable in the future
+    restart: unless-stopped
     depends_on:
       - db
       - file_drop
