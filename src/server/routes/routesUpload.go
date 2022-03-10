@@ -7,8 +7,8 @@ import (
 	"math/rand"
 	"net/http"
 	"os"
-	"strings"
 	"server/models"
+	"strings"
 )
 
 type uploadResponse struct {
@@ -22,9 +22,12 @@ const (
 )
 
 func UploadFile(w http.ResponseWriter, r *http.Request) {
-	r.ParseMultipartForm(100000000)
+	r.ParseMultipartForm(1000000000)
 	tFile, fileHeader, err := r.FormFile("file")
+
+	//dont care about the error, function will fail if upload wasn't successfull
 	defer tFile.Close()
+
 	if err != nil {
 		log.Printf("Could not parse File! %s", err)
 		sendResponse(w, uploadResponse{
@@ -37,12 +40,12 @@ func UploadFile(w http.ResponseWriter, r *http.Request) {
 
 	filePath, dirPathChild := getRandomPathName()
 
-	err = os.MkdirAll(dirPathChild, 0764)
+	err = os.MkdirAll(dirPathChild, 0760)
 	if err != nil {
 		log.Printf("Error Creating Directory %s", err)
 	}
 
-	file, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE, 0666)
+	file, _ := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE, 0660)
 	defer file.Close()
 
 	_, err = io.Copy(file, tFile)
@@ -109,7 +112,7 @@ func getRandomPathName() (string, string) {
 		pathParts[2] += string(letters[rand.Intn(len(letters))])
 	}
 
-	//TODO: storage path should be variable
+	//TODO: file path may be variable in future for non docker deployments
 	dirPathChild := "./storage/" + pathParts[0] + "/" + pathParts[1]
 	filePath := "./storage/" + pathParts[0] + "/" + pathParts[1] + "/" + pathParts[2]
 

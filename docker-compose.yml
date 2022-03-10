@@ -17,6 +17,7 @@ services:
     volumes:
      #- ./dbSettings.json:/app/db_settings/dbSettings.json
       - files:/app/storage #this may be configurable in the future
+      - /tmp:/tmp #this need to be here in case you want to handle files larger 100mb, idk why
     ports:
       - 8080:8080
     restart: unless-stopped
