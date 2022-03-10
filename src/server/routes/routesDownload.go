@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"gitlab.com/peek1e/file-drop/server/models"
+	"server/models"
 	"io/ioutil"
 	"log"
 	"net/http"

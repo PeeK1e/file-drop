@@ -3,7 +3,7 @@ package models
 import (
 	"errors"
 	"fmt"
-	"gitlab.com/peek1e/file-drop/server/db"
+	"server/db"
 )
 
 func IsPathOk(path string) (bool, error) {

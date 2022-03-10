@@ -1,11 +1,12 @@
 package main
 
 import (
-	"gitlab.com/peek1e/file-drop/cleaner/db"
-	"gitlab.com/peek1e/file-drop/cleaner/models"
-	_ "github.com/lib/pq"
+	"cleaner/db"
+	"cleaner/models"
 	"log"
 	"time"
+
+	_ "github.com/lib/pq"
 )
 
 func init() {

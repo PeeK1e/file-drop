@@ -1,4 +1,4 @@
-module gitlab.com/peek1e/file-drop/server
+module server
 
 go 1.17
 

@@ -17,4 +17,6 @@ WORKDIR /app
 COPY ./db_settings/dbSettings-docker.json ./db_settings/dbSettings.json
 COPY --from=build /build/filedrop-cleaner ./filedrop-cleaner
 
+EXPOSE "8080"
+
 ENTRYPOINT ["./filedrop-cleaner"]

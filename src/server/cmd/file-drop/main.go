@@ -2,16 +2,16 @@ package main
 
 import (
 	"flag"
-	"fmt"
-	"gitlab.com/peek1e/file-drop/server/db"
-	"gitlab.com/peek1e/file-drop/server/routes"
-	_ "gitlab.com/peek1e/file-drop/server/routes"
-	_ "github.com/lib/pq"
 	"log"
 	"math/rand"
 	"net/http"
 	"os"
+	"server/db"
+	"server/routes"
+	_ "server/routes"
 	"time"
+
+	_ "github.com/lib/pq"
 )
 
 type Settings struct {
@@ -24,9 +24,9 @@ type Settings struct {
 var setting Settings
 
 func init() {
-	fmt.Println("STARTING UP")
+	log.Println("STARTING UP")
 	flag.StringVar(&setting.Port, "p", "8080", "Sets the listening port of the Webserver")
-	flag.StringVar(&setting.Address, "addr", "", "Sets a specific address to listen on e.g. only localhost")
+	flag.StringVar(&setting.Address, "addr", "0.0.0.0", "Sets a specific address to listen on e.g. only localhost")
 	flag.Parse()
 	//flag.StringVar(&setting.DataDir, "d", "./storage", "Sets the Data Directory Path where files are uploaded to")
 	setting.ServeAddress = setting.Address + ":" + setting.Port

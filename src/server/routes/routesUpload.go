@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
-	"gitlab.com/peek1e/file-drop/server/models"
+	"server/models"
 )
 
 type uploadResponse struct {

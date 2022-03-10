@@ -1,2 +1,4 @@
 template/
-Dockerfile 
+Dockerfile
+.vscode
+.gitignore

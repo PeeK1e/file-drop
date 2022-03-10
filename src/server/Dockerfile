@@ -18,4 +18,6 @@ COPY ./upload_html  ./upload_html
 COPY ./db_settings/dbSettings-docker.json ./db_settings/dbSettings.json
 COPY --from=build /build/filedrop ./filedrop
 
+EXPOSE "8080"
+
 ENTRYPOINT ["./filedrop"]
