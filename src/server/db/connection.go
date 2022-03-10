@@ -30,7 +30,6 @@ func init() {
 	flag.StringVar(&path, "db-conf", "./db_settings/dbSettings.json", "Config file location for the Database")
 
 	file, err := ioutil.ReadFile(path)
-	log.Printf("Json File Content: %s", file)
 	if err != nil {
 		log.Panicf("Make sure the dbSettings.json file exists %s", err)
 	}

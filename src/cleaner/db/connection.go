@@ -31,7 +31,6 @@ func init() {
 	flag.Parse()
 
 	file, err := ioutil.ReadFile(path)
-	log.Printf("Json File Content: %s", file)
 	if err != nil {
 		log.Panicf("Make sure the dbSettings.json file exists %s", err)
 	}
