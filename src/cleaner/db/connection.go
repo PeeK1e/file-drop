@@ -44,10 +44,10 @@ func init() {
 }
 
 func GetInstance() *sql.DB {
-	if db == nil {
-		lock.Lock()
-		defer lock.Unlock()
+	lock.Lock()
+	defer lock.Unlock()
 
+	if db == nil {
 		connString := fmt.Sprintf(
 			"host=%s port=%d user=%s password=%s dbname=%s sslmode=%s",
 			dbSetting.Hostname,

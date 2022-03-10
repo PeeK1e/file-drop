@@ -13,6 +13,7 @@ COPY . .
 RUN CGO_ENABLED=0 GOARCH=$TARGETARCH GOOS=linux go build -o filedrop cmd/file-drop/main.go
 
 FROM scratch
+
 WORKDIR /app
 COPY ./upload_html  ./upload_html
 COPY ./db_settings/dbSettings-docker.json ./db_settings/dbSettings.json
