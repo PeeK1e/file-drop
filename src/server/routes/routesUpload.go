@@ -2,13 +2,13 @@ package routes
 
 import (
 	"encoding/json"
-	"git.peek1e.eu/peek1e/file-drop/server/models"
 	"io"
 	"log"
 	"math/rand"
 	"net/http"
 	"os"
 	"strings"
+	"gitlab.com/peek1e/file-drop/server/models"
 )
 
 type uploadResponse struct {

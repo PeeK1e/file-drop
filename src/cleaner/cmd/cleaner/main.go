@@ -1,8 +1,8 @@
 package main
 
 import (
-	"git.peek1e.eu/peek1e/file-drop/cleaner/db"
-	"git.peek1e.eu/peek1e/file-drop/cleaner/models"
+	"gitlab.com/peek1e/file-drop/cleaner/db"
+	"gitlab.com/peek1e/file-drop/cleaner/models"
 	_ "github.com/lib/pq"
 	"log"
 	"time"

@@ -1,4 +1,4 @@
-module git.peek1e.eu/peek1e/file-drop/cleaner
+module gitlab.com/peek1e/file-drop/cleaner
 
 go 1.17
 
