@@ -27,8 +27,9 @@ func DownloadFile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("Content-Type", "application/octet-stream")
-	w.Header().Set("Content-Disposition", "attachment; filename=\""+name+"\"")
+	w.Header().Add("Content-Type", "application/octet-stream")
+	w.Header().Add("Content-Disposition", "attachment; filename=\""+name+"\"")
+	w.WriteHeader(http.StatusOK)
 	_, _ = w.Write(file)
 }
 
@@ -52,16 +53,17 @@ func PreviewFile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	cType := http.DetectContentType(file)
-	w.Header().Set("Content-Type", cType)
-	w.Header().Set("Content-Disposition", "inline; filename=\""+name+"\"")
-	w.Header().Set("Content-Transfer-Encoding", "binary")
-	w.Header().Set("Content-Length", strconv.FormatInt(stat.Size(), 10))
+	w.Header().Add("Content-Type", cType)
+	w.Header().Add("Content-Disposition", "inline; filename=\""+name+"\"")
+	w.Header().Add("Content-Transfer-Encoding", "binary")
+	w.Header().Add("Content-Length", strconv.FormatInt(stat.Size(), 10))
+	w.WriteHeader(http.StatusOK)
 	_, _ = w.Write(file)
 }
 
 func writeHeader(w http.ResponseWriter, statusCode int) {
 	code := strconv.Itoa(statusCode)
-	w.Header().Set("Content-Type", "text/html; charset=UTF-8")
+	w.Header().Add("Content-Type", "text/html; charset=UTF-8")
 	w.WriteHeader(statusCode)
 	_, _ = w.Write([]byte(code))
 }
