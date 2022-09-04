@@ -60,8 +60,7 @@ func init() {
 func main() {
 	fs := http.FileServer(http.Dir("./upload_html"))
 	http.Handle("/", http.StripPrefix("/", fs))
-	http.HandleFunc("/dl/", routes.DownloadFile)
-	http.HandleFunc("/pv/", routes.PreviewFile)
+	http.HandleFunc("/pv/", routes.DownloadFile)
 	http.HandleFunc("/upload", routes.UploadFile)
 
 	http.ListenAndServe(setting.ServeAddress, nil)
