@@ -16,6 +16,12 @@ body {
     color: azure;
 }
 
+*::-webkit-scrollbar {
+    display: none !important;
+    visibility: hidden !important;
+    width: 0 !important;
+}
+
 a:link {
     color: #8689AC;
 }
@@ -96,12 +102,6 @@ form{
     margin-top: 1rem;
     max-height: 10rem;
     overflow: scroll;
-}
-
-.progress-area::-webkit-scrollbar {
-    display: none !important;
-    visibility: hidden !important;
-    width: 0 !important;
 }
 
 .upload {
