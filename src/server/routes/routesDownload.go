@@ -1,11 +1,11 @@
 package routes
 
 import (
-	"server/models"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
+	"server/models"
 	"strconv"
 	"strings"
 )
@@ -29,7 +29,6 @@ func DownloadFile(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/octet-stream")
 	w.Header().Set("Content-Disposition", "attachment; filename=\""+name+"\"")
-	w.WriteHeader(http.StatusOK)
 	_, _ = w.Write(file)
 }
 
@@ -57,8 +56,6 @@ func PreviewFile(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Disposition", "inline; filename=\""+name+"\"")
 	w.Header().Set("Content-Transfer-Encoding", "binary")
 	w.Header().Set("Content-Length", strconv.FormatInt(stat.Size(), 10))
-	w.Header().Set("X-Content-Type-Options", "nosniff")
-	w.WriteHeader(http.StatusOK)
 	_, _ = w.Write(file)
 }
 

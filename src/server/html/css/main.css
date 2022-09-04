@@ -1,0 +1,124 @@
+/* color palette
+#8689AC
+#587099
+#3F5576
+#2F3148
+#101116
+*/ 
+
+/* Import Google font - Poppins */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
+
+body {
+    background-color: #101116;
+    text-align: center !important;
+    font-family: "Poppins", sans-serif !important;
+    color: azure;
+}
+
+a:link {
+    color: #8689AC;
+}
+
+a:visited {
+    color: #8689AC;
+}
+
+.container {
+    display: flex;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 50%;
+    flex-direction: column;
+
+    background-color: #2F3148;
+
+    border-radius: 1em;
+
+    min-height: 30%;
+    height: fit-content;
+    width: 60%;
+
+    padding: 1rem;
+}
+
+.container .heading h3{
+    margin: 0;
+    padding-bottom: 1rem;
+    top: 0;
+}
+
+form{
+    opacity: 0;
+    top: 0;
+    left: 0;
+    height: 0;
+    width: 0;
+    visibility: hidden;
+}
+
+.file-input {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+    height: 10rem !important;
+
+    border-style: dashed;
+    border-radius: 1rem;
+    border-color: #3F5576;
+}
+
+.uploading {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    margin: 1rem;
+    padding: 1rem;
+
+    background-color: #3F5576;
+
+    border-radius: 1rem;
+    border-style: none;
+}
+
+.progress-bar {
+    min-width: none;
+    min-height: 5px;
+    background-color: #8689AC;
+}
+
+#progress-area {
+    width: 100%;
+    min-height: 0%;
+    margin-top: 1rem;
+    max-height: 10rem;
+    overflow: scroll;
+}
+
+.progress-area::-webkit-scrollbar {
+    display: none !important;
+    visibility: hidden !important;
+    width: 0 !important;
+}
+
+.upload {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+
+    margin: 1rem;
+    background-color: #3F5576;
+
+    border-radius: 1rem;
+    border-style: none;
+}
+
+.upload div {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin: 1rem;
+}
