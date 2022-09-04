@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>File Drop</title>
+  <script src="./js/surreal/surreal.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+  <link href="./css/main.css" rel="stylesheet"/>
+</head>
+
+<body>
+  <div class="container">
+    <div class="heading">
+      <h3>File Drop</h3>
+    </div>
+    <div class="file-input">
+      <i class="cloud-upload"></i>
+      <i for="file">Pick File or Drag And Drop</i>
+    </div>
+    <div id="progress-area"></div>
+  </div>
+</body>
+
+<form>
+  <input id="file" type="file" name="file">
+</form>
+
+<script src="./js/actions.js"></script>
