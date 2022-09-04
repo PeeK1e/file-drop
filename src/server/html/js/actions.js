@@ -11,7 +11,7 @@ function dropHandler(ev) {
     if (ev.dataTransfer.items[0].kind === 'file') {
       let dT = new DataTransfer();
       dT.items.add(ev.dataTransfer.items[0].getAsFile())
-      fileInput.files = dT.files
+      me("#file").files = dT.files
       uploadFile(dT.files[0].name)
     }
   } else {
@@ -89,11 +89,11 @@ function callback(string, fileName, fileSize) {
         value: link
       })
       element.innerHTML = `
-                          <div>
-                            <span class="name">${fileName}</span>
-                            <span class="name"><a href="${link}">${link}</a></span>
+                          <div class="uploaded-file-info">
+                            <span>${fileName}</span>
+                            <span><a href="${link}">${link}</a></span>
                           </div>
-                          <div>
+                          <div class="qrcode">
                             <img src="${qrcode.toDataURL()}"/>
                           </div>`;
     } else {

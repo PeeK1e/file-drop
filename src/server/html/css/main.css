@@ -10,9 +10,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
 
 body {
-    background-color: #101116;
     text-align: center !important;
     font-family: "Poppins", sans-serif !important;
+    text-overflow: ellipsis !important;
+    background-color: #101116;
     color: azure;
 }
 
@@ -22,11 +23,11 @@ body {
     width: 0 !important;
 }
 
-a:link {
+*:link {
     color: #8689AC;
 }
 
-a:visited {
+*:visited {
     color: #8689AC;
 }
 
@@ -100,25 +101,47 @@ form{
     width: 100%;
     min-height: 0%;
     margin-top: 1rem;
-    max-height: 10rem;
+    max-height: 15rem;
     overflow: scroll;
+}
+
+@media (min-width: 700px) {
+    .upload {
+        flex-direction: row;
+    }
+}
+
+@media (max-width: 700px) {
+    .upload {
+        flex-direction: column;
+    }
 }
 
 .upload {
     display: flex;
-    flex-direction: row;
     justify-content: center;
-
     margin: 1rem;
     background-color: #3F5576;
-
     border-radius: 1rem;
     border-style: none;
 }
 
 .upload div {
+    margin: 1rem;
+}
+
+.uploaded-file-info {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    margin: 1rem;
+}
+
+.qrcode {
+    display: flex;
+    justify-content: center;
+}
+
+.qrcode img {
+    max-width: 100px;
+    max-height: 100px;
 }
