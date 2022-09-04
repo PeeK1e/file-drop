@@ -4,27 +4,41 @@ any("#file").on("change", ev => fileHandler(ev));
 
 any(".file-input").on("dragover", ev => halt(ev));
 
-any(".file-input").on("drop", ev => { halt(ev); fileHandler(ev); });
+any(".file-input").on("drop", ev => { halt(ev); dropHandler(ev); });
+
+function dropHandler(ev) {
+  if (ev.dataTransfer.items) {
+    if (ev.dataTransfer.items[0].kind === 'file') {
+      let dT = new DataTransfer();
+      dT.items.add(ev.dataTransfer.items[0].getAsFile())
+      fileInput.files = dT.files
+      uploadFile(dT.files[0].name)
+    }
+  } else {
+    fileInput.files = ev.dataTransfer.files;
+    uploadFile(ev.dataTransfer.files[0].name)
+  }
+}
 
 function fileHandler(ev) {
   let file;
-  if (ev.dataTransfer !== undefined){
-    file = ev.dataTransfer.files[0];
-  } else {
+  if (ev.target.files){
     file = ev.target.files[0];
+  } else {
+    return;
   }
 
   if(file){
-      let fileName = file.name; //getting file name
-      if(file.size > 200000000){
-      alert("You can't upload Files larger than 200 MB")
-      return
-      }
-      if(fileName.length >= 12){ //if file name length is greater than 12 then split it and add ...
+    let fileName = file.name;
+    if(file.size > 200000000){
+      alert("You can't upload Files larger than 200 MB");
+      return;
+    }
+    if(fileName.length >= 12){
       let splitName = fileName.split('.');
-      fileName = splitName[0].substring(0, 13) + "... ." + splitName[1];
-      }
-      uploadFile(fileName); //calling uploadFile with passing file name as an argument
+      fileName = splitName[0].substring(0, 16) + "... ." + splitName[1];
+    }
+    uploadFile(fileName);
   }
 }
 
