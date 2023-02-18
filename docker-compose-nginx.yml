@@ -17,7 +17,7 @@ services:
     restart: unless-stopped
 
   file_drop:
-    image: peek1e/file-server:latest
+    image: peek1e/file-api:latest
     build: ./src/server
     volumes:
       - files:/app/storage
@@ -35,7 +35,7 @@ services:
       - db
   
   web_service:
-    image: peek1e/file-webclient:latest
+    image: peek1e/file-web:latest
     build: ./src/webclient
     restart: unless-stopped
     depends_on:
