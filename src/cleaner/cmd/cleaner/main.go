@@ -10,6 +10,18 @@ import (
 )
 
 func init() {
+	connectToDatabase()
+}
+
+func main() {
+	ticker := time.Ticker{C: time.Tick(10 * time.Minute)}
+	for {
+		<-ticker.C
+		models.RemoveExpiredFiles()
+	}
+}
+
+func connectToDatabase() {
 	count := 0
 	duration := 2
 	retryLimit := 5
@@ -25,13 +37,5 @@ func init() {
 			log.Print("Connected to DB")
 			break
 		}
-	}
-}
-
-func main() {
-	ticker := time.Ticker{C: time.Tick(10 * time.Minute)}
-	for {
-		<-ticker.C
-		models.RemoveExpiredFiles()
 	}
 }

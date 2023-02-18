@@ -9,7 +9,7 @@ import (
 func IsPathOk(path string) (bool, error) {
 	instance := db.GetInstance()
 
-	statement := `SELECT COUNT("path") AS CNT FROM "file" WHERE "path" LIKE $1`
+	statement := `SELECT COUNT("path") AS COUNT FROM "file" WHERE "path" LIKE $1`
 
 	result, err := instance.Query(statement, path)
 	if err != nil {
