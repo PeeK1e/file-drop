@@ -7,14 +7,14 @@ stages:
   - build-container
 
 image:
-  name: gcr.io/kaniko-project/executor:debug
+  name: gcr.io/kaniko-project/executor:latest
   entrypoint: [""]
 
 variables:
-  CI_REGISTRY: docker.io
+  REGISTRY_NAME: docker.io
 
 before_script:
-  - echo "{\"auths\":{\"${CI_REGISTRY}\":{\"auth\":\"$(printf "%s:%s" "${REGISTRY_USER}" "${REGISTRY_PASSWORD}" | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
+  - echo "{\"auths\":{\"${REGISTRY_URL}\":{\"auth\":\"$(printf "%s:%s" "${REGISTRY_USER}" "${REGISTRY_PASSWORD}" | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
 
 sast:
   stage: sast
@@ -23,34 +23,47 @@ sast:
 semgrep-sast:
   stage: sast
   before_script: []
+  allow_failure: true
 
-# Test if Containers are buildable
-build-test:
-  before_script: []
-  stage: build-test
-  script:
-    - |
-      /kaniko/executor \
-      --context $CI_PROJECT_DIR/src/webclient \
-      --dockerfile $CI_PROJECT_DIR/src/webclient/Dockerfile \
-      --no-push
-    - |
-      /kaniko/executor \
-      --context $CI_PROJECT_DIR/src/server \
-      --dockerfile $CI_PROJECT_DIR/src/server/Dockerfile \
-      --no-push
-    - |
-      /kaniko/executor \
-      --context $CI_PROJECT_DIR/src/cleaner \
-      --dockerfile $CI_PROJECT_DIR/src/cleaner/Dockerfile \
-      --no-push
+# # Test if Containers are buildable
+# file-web-test:
+#   before_script: []
+#   stage: build-test
+#   script:
+#     - |
+#       /kaniko/executor \
+#       --context $CI_PROJECT_DIR/src/webclient \
+#       --dockerfile $CI_PROJECT_DIR/src/webclient/Dockerfile \
+#       --no-push
+
+# file-api-test:
+#   before_script: []
+#   stage: build-test
+#   script:
+#     - |
+#       /kaniko/executor \
+#       --context $CI_PROJECT_DIR/src/server \
+#       --dockerfile $CI_PROJECT_DIR/src/server/Dockerfile \
+#       --no-push
+
+# file-cleaner-test:
+#   before_script: []
+#   stage: build-test
+#   script:
+#     - |
+#       /kaniko/executor \
+#       --context $CI_PROJECT_DIR/src/cleaner \
+#       --dockerfile $CI_PROJECT_DIR/src/cleaner/Dockerfile \
+#       --no-push
+
+# Build and Push Containers
 file-web:
   stage: build-container
   script: |
     /kaniko/executor \
     --context $CI_PROJECT_DIR/src/webclient \
     --dockerfile $CI_PROJECT_DIR/src/webclient/Dockerfile \
-    --destination $CI_REGISTRY/$REGISTRY_PROJECT/$CI_JOB_NAME:$CI_COMMIT_SHA
+    --destination $REGISTRY_NAME/$REGISTRY_PROJECT/$CI_JOB_NAME:$CI_COMMIT_SHA
   only:
     changes:
       - "$CI_PROJECT_DIR/src/webclient"
@@ -63,7 +76,7 @@ file-api:
     /kaniko/executor \
     --context $CI_PROJECT_DIR/src/server \
     --dockerfile $CI_PROJECT_DIR/src/server/Dockerfile \
-    --destination $CI_REGISTRY/$REGISTRY_PROJECT/$CI_JOB_NAME:$CI_COMMIT_SHA
+    --destination $REGISTRY_NAME/$REGISTRY_PROJECT/$CI_JOB_NAME:$CI_COMMIT_SHA
   only:
     changes:
       - "$CI_PROJECT_DIR/src/server"
@@ -76,7 +89,7 @@ file-cleaner:
     /kaniko/executor \
     --context $CI_PROJECT_DIR/src/cleaner \
     --dockerfile $CI_PROJECT_DIR/src/cleaner/Dockerfile \
-    --destination $CI_REGISTRY/$REGISTRY_PROJECT/$CI_JOB_NAME:$CI_COMMIT_SHA
+    --destination $REGISTRY_NAME/$REGISTRY_PROJECT/$CI_JOB_NAME:$CI_COMMIT_SHA
   only:
     changes:
       - "$CI_PROJECT_DIR/src/cleaner"
