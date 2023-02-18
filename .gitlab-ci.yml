@@ -2,7 +2,7 @@ include:
   - template: Security/SAST.gitlab-ci.yml
 
 stages:
-  - test
+  - sast
   - build-test
   - build-container
 
@@ -15,6 +15,14 @@ variables:
 
 before_script:
   - echo "{\"auths\":{\"${CI_REGISTRY}\":{\"auth\":\"$(printf "%s:%s" "${REGISTRY_USER}" "${REGISTRY_PASSWORD}" | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
+
+sast:
+  stage: sast
+  before_script: []
+
+semgrep-sast:
+  stage: sast
+  before_script: []
 
 # Test if Containers are buildable
 build-test:
