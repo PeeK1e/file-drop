@@ -25,36 +25,36 @@ semgrep-sast:
   before_script: []
   allow_failure: true
 
-# # Test if Containers are buildable
-# file-web-test:
-#   before_script: []
-#   stage: build-test
-#   script:
-#     - |
-#       /kaniko/executor \
-#       --context $CI_PROJECT_DIR/src/webclient \
-#       --dockerfile $CI_PROJECT_DIR/src/webclient/Dockerfile \
-#       --no-push
+# Test if Containers are buildable
+file-web-test:
+  before_script: []
+  stage: build-test
+  script:
+    - |
+      /kaniko/executor \
+      --context $CI_PROJECT_DIR/src/webclient \
+      --dockerfile $CI_PROJECT_DIR/src/webclient/Dockerfile \
+      --no-push
 
-# file-api-test:
-#   before_script: []
-#   stage: build-test
-#   script:
-#     - |
-#       /kaniko/executor \
-#       --context $CI_PROJECT_DIR/src/server \
-#       --dockerfile $CI_PROJECT_DIR/src/server/Dockerfile \
-#       --no-push
+file-api-test:
+  before_script: []
+  stage: build-test
+  script:
+    - |
+      /kaniko/executor \
+      --context $CI_PROJECT_DIR/src/server \
+      --dockerfile $CI_PROJECT_DIR/src/server/Dockerfile \
+      --no-push
 
-# file-cleaner-test:
-#   before_script: []
-#   stage: build-test
-#   script:
-#     - |
-#       /kaniko/executor \
-#       --context $CI_PROJECT_DIR/src/cleaner \
-#       --dockerfile $CI_PROJECT_DIR/src/cleaner/Dockerfile \
-#       --no-push
+file-cleaner-test:
+  before_script: []
+  stage: build-test
+  script:
+    - |
+      /kaniko/executor \
+      --context $CI_PROJECT_DIR/src/cleaner \
+      --dockerfile $CI_PROJECT_DIR/src/cleaner/Dockerfile \
+      --no-push
 
 # Build and Push Containers
 file-web:
