@@ -1,0 +1,76 @@
+include:
+  - template: Jobs/SAST.gitlab-ci.yml
+
+stages:
+  - sast
+  - build-test
+  - build-container
+
+image:
+  name: gcr.io/kaniko-project/executor:debug
+  entrypoint: [""]
+
+variables:
+  CI_REGISTRY: docker.io
+
+before_script:
+  - echo "{\"auths\":{\"${CI_REGISTRY}\":{\"auth\":\"$(printf "%s:%s" "${REGISTRY_USER}" "${REGISTRY_PASSWORD}" | base64 | tr -d '\n')\"}}}" > /kaniko/.docker/config.json
+
+# Test if Containers are buildable
+build-test:
+    before_script: []
+    stage: build-test
+    script:
+        - |
+            /kaniko/executor \
+            --context $CI_PROJECT_DIR/src/webclient \
+            --dockerfile $CI_PROJECT_DIR/src/webclient/Dockerfile \
+            --no-push
+        - |
+            /kaniko/executor \
+            --context $CI_PROJECT_DIR/src/server \
+            --dockerfile $CI_PROJECT_DIR/src/server/Dockerfile \
+            --no-push
+        - |
+            /kaniko/executor \
+            --context $CI_PROJECT_DIR/src/cleaner \
+            --dockerfile $CI_PROJECT_DIR/src/cleaner/Dockerfile \
+            --no-push
+file-web:
+    stage: build-container
+    script: |
+        /kaniko/executor \
+        --context $CI_PROJECT_DIR/src/webclient \
+        --dockerfile $CI_PROJECT_DIR/src/webclient/Dockerfile \
+        --destination $REGISTRY/$REGISTRY_PROJECT/$CI_JOB_NAME:$CI_COMMIT_SHA
+    only: 
+        changes:
+          - "$CI_PROJECT_DIR/src/webclient"
+        refs: 
+          - main
+
+file-api:
+    stage: build-container
+    script: |
+        /kaniko/executor \
+        --context $CI_PROJECT_DIR/src/server \
+        --dockerfile $CI_PROJECT_DIR/src/server/Dockerfile \
+        --destination $REGISTRY/$REGISTRY_PROJECT/$CI_JOB_NAME:$CI_COMMIT_SHA
+    only: 
+        changes:
+          - "$CI_PROJECT_DIR/src/server"
+        refs: 
+          - main
+
+file-cleaner:
+    stage: build-container
+    script: |
+        /kaniko/executor \
+        --context $CI_PROJECT_DIR/src/cleaner \
+        --dockerfile $CI_PROJECT_DIR/src/cleaner/Dockerfile \
+        --destination $REGISTRY/$REGISTRY_PROJECT/$CI_JOB_NAME:$CI_COMMIT_SHA
+    only: 
+        changes:
+          - "$CI_PROJECT_DIR/src/cleaner"
+        refs:
+          - main
