@@ -15,8 +15,6 @@ RUN CGO_ENABLED=0 GOARCH=$TARGETARCH GOOS=linux go build -o filedrop cmd/file-dr
 FROM scratch
 
 WORKDIR /app
-COPY ./html  ./upload_html
-COPY ./db_settings/dbSettings-docker.json ./db_settings/dbSettings.json
 COPY --from=build /build/filedrop ./filedrop
 
 EXPOSE "8080"
