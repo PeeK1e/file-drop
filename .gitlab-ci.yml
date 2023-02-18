@@ -35,6 +35,12 @@ file-web-test:
       --context $CI_PROJECT_DIR/src/webclient \
       --dockerfile $CI_PROJECT_DIR/src/webclient/Dockerfile \
       --no-push
+  only:
+    changes:
+      - "$CI_PROJECT_DIR/src/webclient"
+    refs:
+      - main
+      - dev
 
 file-api-test:
   before_script: []
@@ -45,6 +51,12 @@ file-api-test:
       --context $CI_PROJECT_DIR/src/server \
       --dockerfile $CI_PROJECT_DIR/src/server/Dockerfile \
       --no-push
+  only:
+    changes:
+      - "$CI_PROJECT_DIR/src/server"
+    refs:
+      - main
+      - dev
 
 file-cleaner-test:
   before_script: []
@@ -55,6 +67,12 @@ file-cleaner-test:
       --context $CI_PROJECT_DIR/src/cleaner \
       --dockerfile $CI_PROJECT_DIR/src/cleaner/Dockerfile \
       --no-push
+  only:
+    changes:
+      - "$CI_PROJECT_DIR/src/cleaner"
+    refs:
+      - main
+      - dev
 
 # Build and Push Containers
 file-web:
@@ -64,6 +82,7 @@ file-web:
     --context $CI_PROJECT_DIR/src/webclient \
     --dockerfile $CI_PROJECT_DIR/src/webclient/Dockerfile \
     --destination $REGISTRY_NAME/$REGISTRY_PROJECT/$CI_JOB_NAME:$CI_COMMIT_SHA
+    --destination $REGISTRY_NAME/$REGISTRY_PROJECT/$CI_JOB_NAME:latest
   only:
     changes:
       - "$CI_PROJECT_DIR/src/webclient"
@@ -77,6 +96,7 @@ file-api:
     --context $CI_PROJECT_DIR/src/server \
     --dockerfile $CI_PROJECT_DIR/src/server/Dockerfile \
     --destination $REGISTRY_NAME/$REGISTRY_PROJECT/$CI_JOB_NAME:$CI_COMMIT_SHA
+    --destination $REGISTRY_NAME/$REGISTRY_PROJECT/$CI_JOB_NAME:latest
   only:
     changes:
       - "$CI_PROJECT_DIR/src/server"
@@ -90,6 +110,7 @@ file-cleaner:
     --context $CI_PROJECT_DIR/src/cleaner \
     --dockerfile $CI_PROJECT_DIR/src/cleaner/Dockerfile \
     --destination $REGISTRY_NAME/$REGISTRY_PROJECT/$CI_JOB_NAME:$CI_COMMIT_SHA
+    --destination $REGISTRY_NAME/$REGISTRY_PROJECT/$CI_JOB_NAME:latest
   only:
     changes:
       - "$CI_PROJECT_DIR/src/cleaner"
