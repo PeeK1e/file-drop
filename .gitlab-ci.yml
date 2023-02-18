@@ -7,7 +7,7 @@ stages:
   - build-container
 
 image:
-  name: gcr.io/kaniko-project/executor:latest
+  name: gcr.io/kaniko-project/executor:v1.9.1-debug
   entrypoint: [""]
 
 variables:
