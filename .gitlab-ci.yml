@@ -1,8 +1,8 @@
 include:
-  - template: Jobs/SAST.gitlab-ci.yml
+  - template: Security/SAST.gitlab-ci.yml
 
 stages:
-  - sast
+  - test
   - build-test
   - build-container
 
