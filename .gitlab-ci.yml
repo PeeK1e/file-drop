@@ -34,9 +34,6 @@ file-web:
     --destination $REGISTRY_NAME/$REGISTRY_PROJECT/$CI_JOB_NAME:$CI_COMMIT_SHA \
     --destination $REGISTRY_NAME/$REGISTRY_PROJECT/$CI_JOB_NAME:latest
   only:
-    changes:
-      - "./src/webclient"
-      - "./src/nginx.conf"
     refs:
       - main
 
@@ -49,8 +46,6 @@ file-api:
     --destination $REGISTRY_NAME/$REGISTRY_PROJECT/$CI_JOB_NAME:$CI_COMMIT_SHA \
     --destination $REGISTRY_NAME/$REGISTRY_PROJECT/$CI_JOB_NAME:latest
   only:
-    changes:
-      - "./src/server"
     refs:
       - main
 
@@ -63,7 +58,5 @@ file-cleaner:
     --destination $REGISTRY_NAME/$REGISTRY_PROJECT/$CI_JOB_NAME:$CI_COMMIT_SHA \
     --destination $REGISTRY_NAME/$REGISTRY_PROJECT/$CI_JOB_NAME:latest
   only:
-    changes:
-      - "./src/cleaner"
     refs:
       - main
