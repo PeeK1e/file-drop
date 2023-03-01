@@ -1,6 +1,7 @@
 package environment
 
 import (
+	"fmt"
 	"log"
 	"os"
 )
@@ -11,11 +12,50 @@ var (
 )
 
 func init() {
-	loadEnvironmentAndFlags()
+	load()
+}
+
+type httpServerOptions struct {
+	listenAddress string
+	port          string
+}
+
+type databaseSettings struct {
+	HOSTNAME     string `json:"hostname"`
+	PORT         string `json:"port"`
+	USERNAME     string `json:"userName"`
+	PASSWORD     string `json:"userPasswd"`
+	DATABASENAME string `json:"DBName"`
+	SSL          string `json:"SSLMode"`
+}
+
+func (s httpServerOptions) String() string {
+	return s.listenAddress + ":" + s.port
+}
+
+// Formats and print the database connetion string for the postgres library.
+//
+// All values are set via the `DATABASE_*` environment variables.
+func (db databaseSettings) ConnectionString() string {
+	return fmt.Sprintf(
+		"host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
+		db.HOSTNAME,
+		db.PORT,
+		db.USERNAME,
+		db.PASSWORD,
+		db.DATABASENAME,
+		db.SSL)
+}
+
+func getEnvOrDefault(envName string, defaultValue string) string {
+	if value, ok := os.LookupEnv(envName); ok {
+		return value
+	}
+	return defaultValue
 }
 
 // Loads all ENV vars for the programm startup
-func loadEnvironmentAndFlags() {
+func load() {
 	log.Print("Loading Environment")
 	DatabaseSettings = &databaseSettings{
 		HOSTNAME:     getEnvOrDefault("DATABASE_HOSTNAME", "db"),
@@ -30,11 +70,4 @@ func loadEnvironmentAndFlags() {
 		listenAddress: getEnvOrDefault("HTTP_LISTEN_ADDRESS", "0.0.0.0"),
 		port:          getEnvOrDefault("HTTP_PORT", "8080"),
 	}
-}
-
-func getEnvOrDefault(envName string, defaultValue string) string {
-	if value, ok := os.LookupEnv(envName); ok {
-		return value
-	}
-	return defaultValue
 }

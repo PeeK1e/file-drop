@@ -10,6 +10,9 @@ import (
 
 func DownloadFile(w http.ResponseWriter, r *http.Request) {
 	id := strings.Replace(r.RequestURI, "/pv/", "", -1)
+
+	log.Printf("Client %s requested FileID %s", r.RemoteAddr, id)
+
 	_, path, err := models.GetFileByID(id)
 	if err != nil {
 		log.Printf("Couldn't retrieve Database Entry %s", err)

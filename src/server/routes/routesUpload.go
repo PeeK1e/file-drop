@@ -25,6 +25,8 @@ func UploadFile(w http.ResponseWriter, r *http.Request) {
 	r.ParseMultipartForm(1000000000)
 	tFile, fileHeader, err := r.FormFile("file")
 
+	log.Printf("New File Upload %s", fileHeader.Filename)
+
 	//dont care about the error, function will fail if upload wasn't successfull
 	defer tFile.Close()
 
@@ -40,10 +42,11 @@ func UploadFile(w http.ResponseWriter, r *http.Request) {
 
 	filePath, dirPathChild := getRandomPathName()
 
-	err = os.MkdirAll(dirPathChild, 0760)
-	if err != nil {
+	if err = os.MkdirAll(dirPathChild, 0760); err != nil {
 		log.Printf("Error Creating Directory %s", err)
 	}
+
+	log.Print("Saving File in %s", filePath)
 
 	file, _ := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE, 0660)
 	defer file.Close()
@@ -86,6 +89,8 @@ func UploadFile(w http.ResponseWriter, r *http.Request) {
 		Ok:     true,
 		FileID: id,
 	})
+
+	log.Printf("Saved File %s, in %s", fileHeader.Filename, filePath)
 }
 
 func sendResponse(w http.ResponseWriter, uR uploadResponse) {
@@ -112,7 +117,6 @@ func getRandomPathName() (string, string) {
 		pathParts[2] += string(letters[rand.Intn(len(letters))])
 	}
 
-	//TODO: file path may be variable in future for non docker deployments
 	dirPathChild := "./storage/" + pathParts[0] + "/" + pathParts[1]
 	filePath := "./storage/" + pathParts[0] + "/" + pathParts[1] + "/" + pathParts[2]
 

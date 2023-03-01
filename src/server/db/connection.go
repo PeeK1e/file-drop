@@ -21,7 +21,7 @@ func GetInstance() *sql.DB {
 	defer lock.Unlock()
 
 	if db == nil {
-		connectionString := environment.DatabaseSettings.GetDatabaseString()
+		connectionString := environment.DatabaseSettings.ConnectionString()
 
 		err := error(nil)
 		db, err = sql.Open("postgres", connectionString)
