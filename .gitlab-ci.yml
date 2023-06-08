@@ -30,7 +30,7 @@ file-web:
   script: |
     /kaniko/executor \
     --context $CI_PROJECT_DIR/src/webclient \
-    --dockerfile $CI_PROJECT_DIR/src/webclient/Dockerfile \
+    --dockerfile $CI_PROJECT_DIR/src/docker/Dockerfile-web \
     --destination $REGISTRY_NAME/$REGISTRY_PROJECT/$CI_JOB_NAME:$CI_COMMIT_SHA \
     --destination $REGISTRY_NAME/$REGISTRY_PROJECT/$CI_JOB_NAME:latest
   only:
@@ -41,8 +41,8 @@ file-api:
   stage: build-container
   script: |
     /kaniko/executor \
-    --context $CI_PROJECT_DIR/src/server \
-    --dockerfile $CI_PROJECT_DIR/src/server/Dockerfile \
+    --context $CI_PROJECT_DIR \
+    --dockerfile $CI_PROJECT_DIR/src/docker/Dockerfile-api \
     --destination $REGISTRY_NAME/$REGISTRY_PROJECT/$CI_JOB_NAME:$CI_COMMIT_SHA \
     --destination $REGISTRY_NAME/$REGISTRY_PROJECT/$CI_JOB_NAME:latest
   only:
@@ -53,8 +53,8 @@ file-cleaner:
   stage: build-container
   script: |
     /kaniko/executor \
-    --context $CI_PROJECT_DIR/src/cleaner \
-    --dockerfile $CI_PROJECT_DIR/src/cleaner/Dockerfile \
+    --context $CI_PROJECT_DIR \
+    --dockerfile $CI_PROJECT_DIR/src/docker/Dockerfile-cleaner \
     --destination $REGISTRY_NAME/$REGISTRY_PROJECT/$CI_JOB_NAME:$CI_COMMIT_SHA \
     --destination $REGISTRY_NAME/$REGISTRY_PROJECT/$CI_JOB_NAME:latest
   only:
