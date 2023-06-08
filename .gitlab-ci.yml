@@ -24,42 +24,41 @@ semgrep-sast:
   before_script: []
   allow_failure: true
 
+.build:
+  stage: build-container
+  only:
+    refs:
+      - main
+      - tags
+    changes:
+      - "cmd/**"
+      - "pkg/**"
+      - "src/**"
+
 # Build and Push Containers
 file-web:
-  stage: build-container
+  extends: .build
   script: |
     /kaniko/executor \
     --context $CI_PROJECT_DIR/src/webclient \
     --dockerfile $CI_PROJECT_DIR/src/docker/Dockerfile-web \
     --destination $REGISTRY_NAME/$REGISTRY_PROJECT/$CI_JOB_NAME:${CI_COMMIT_TAG:-$CI_COMMIT_SHORT_SHA} \
     --destination $REGISTRY_NAME/$REGISTRY_PROJECT/$CI_JOB_NAME:latest
-  only:
-    refs:
-      - main
-      - tags
 
 file-api:
-  stage: build-container
+  extends: .build
   script: |
     /kaniko/executor \
     --context $CI_PROJECT_DIR \
     --dockerfile $CI_PROJECT_DIR/src/docker/Dockerfile-api \
     --destination $REGISTRY_NAME/$REGISTRY_PROJECT/$CI_JOB_NAME:${CI_COMMIT_TAG:-$CI_COMMIT_SHORT_SHA} \
     --destination $REGISTRY_NAME/$REGISTRY_PROJECT/$CI_JOB_NAME:latest
-  only:
-    refs:
-      - main
-      - tags
 
 file-cleaner:
-  stage: build-container
+  extends: .build
   script: |
     /kaniko/executor \
     --context $CI_PROJECT_DIR \
     --dockerfile $CI_PROJECT_DIR/src/docker/Dockerfile-cleaner \
     --destination $REGISTRY_NAME/$REGISTRY_PROJECT/$CI_JOB_NAME:${CI_COMMIT_TAG:-$CI_COMMIT_SHORT_SHA} \
     --destination $REGISTRY_NAME/$REGISTRY_PROJECT/$CI_JOB_NAME:latest
-  only:
-    refs:
-      - main
-      - tags
