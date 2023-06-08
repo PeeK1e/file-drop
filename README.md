@@ -35,27 +35,22 @@ If you want to use the `docker-compose.yml` you will need a reverse proxy routin
 
 Otherwise use the `docker-compose-nginx.yml` file for a simple setup.
 
+## CLI Flags / ENV Vars
 
-Configuring the filedrop server and cleaner
+The following utput can be retrieved with e.g. `go run cmd/server/main.go --help`.
 
-```env
-#########################################
-#           Server Only Values          #
-#########################################
+The format is short-flag, long-flag and it's default value, description and the ENVIRONMENT_VAR you can use to configure it.
 
-HTTP_LISTEN_ADDRESS="0.0.0.0"   # The Address the API will listen on
-HTTP_PORT="8080"                # The port the API will listen on
-
-#########################################
-#        Server And Cleaner Values      #
-#########################################
-
-DATABASE_HOSTNAME="db"          # Postgres Hostname
-DATABASE_PORT="5432"            # Postgres Port
-DATABASE_USERNAME="user"        # Postgres Username
-DATABASE_PASSWORD="pass"        # Postgres Password
-DATABASE_DATABASENAME="uploas"  # Postgres Database Name
-DATABASE_SSL="disable"          # Postgres SSL Mode {disable, verify-ca, ...}
+```
+Flags:
+  -l, --listen="0.0.0.0:8080"  HTTP Listen Address ($FD_HTTP_ADDRESS)
+  -H, --db-host="postgres"     Database Host ($FD_DB_HOST)
+  -p, --db-port="5432"         Database Host ($FD_DB_PORT)
+  -U, --db-user="postgres"     Database User ($FD_DB_USER)
+  -P, --db-password="s3cr3t!"  Database Password ($FD_DB_PASSWORD)
+  -N, --db-name="postgresdb"   Database Name ($FD_DB_NAME)
+  -S, --db-ssl-mode=disable    Database SSL Mode ($FD_DB_SSL_MODE)
+  -R, --db-connect-retry=5     Database connection retry count ($FD_DB_RETRY)
 ```
 
 ## The Architecture
