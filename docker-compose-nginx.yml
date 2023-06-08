@@ -5,42 +5,6 @@ volumes:
   pgdata:
 
 services:
-  db:
-    image: postgres:15.2-alpine
-    environment:
-      POSTGRES_PASSWORD:  "password"
-      POSTGRES_USER:  "postgres"
-      POSTGRES_DB:  "uploads"
-    volumes:
-      - pgdata:/var/lib/postgresql/data
-      - ./src/.psql-init-scripts/:/docker-entrypoint-initdb.d/
-    restart: unless-stopped
-
-  file_drop:
-    image: peek1e/file-api:latest
-    build: ./src/server
-    volumes:
-      - files:/app/storage
-    restart: unless-stopped
-    depends_on:
-      - db
-
-  file_cleaner:
-    image: peek1e/file-cleaner:latest
-    build: ./src/cleaner
-    volumes:
-      - files:/app/storage
-    restart: unless-stopped
-    depends_on:
-      - db
-  
-  web_service:
-    image: peek1e/file-web:latest
-    build: ./src/webclient
-    restart: unless-stopped
-    depends_on:
-      - file_drop
-
   nginx:
     image: nginx:1.22-alpine
     ports:
@@ -49,4 +13,39 @@ services:
       - ./src/nginx.conf:/etc/nginx/conf.d/default.conf:ro
     depends_on:
       - web_service
+      - file_drop
+  postgres:
+    image: postgres:15.2-alpine
+    environment:
+      POSTGRES_PASSWORD:  "s3cr3t!"
+      POSTGRES_USER:  "postgres"
+      POSTGRES_DB:  "postgresdb"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./src/.psql-init-scripts/:/docker-entrypoint-initdb.d/
+    restart: unless-stopped
+
+  file_drop:
+    image: peek1e/file-api:dev
+    build: ./src/server
+    volumes:
+      - files:/app/storage
+    restart: unless-stopped
+    depends_on:
+      - postgres
+
+  file_cleaner:
+    image: peek1e/file-cleaner:dev
+    build: ./src/cleaner
+    volumes:
+      - files:/app/storage
+    restart: unless-stopped
+    depends_on:
+      - postgres
+  
+  web_service:
+    image: peek1e/file-web:latest
+    build: ./src/webclient
+    restart: unless-stopped
+    depends_on:
       - file_drop

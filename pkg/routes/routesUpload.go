@@ -7,8 +7,9 @@ import (
 	"math/rand"
 	"net/http"
 	"os"
-	"server/models"
 	"strings"
+
+	"gitlab.com/PeeK1e/file-drop/pkg/models"
 )
 
 type uploadResponse struct {
@@ -46,7 +47,7 @@ func UploadFile(w http.ResponseWriter, r *http.Request) {
 		log.Printf("Error Creating Directory %s", err)
 	}
 
-	log.Print("Saving File in %s", filePath)
+	log.Printf("Saving File in %s", filePath)
 
 	file, _ := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE, 0660)
 	defer file.Close()

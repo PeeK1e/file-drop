@@ -3,7 +3,8 @@ package models
 import (
 	"errors"
 	"fmt"
-	"server/db"
+
+	"gitlab.com/PeeK1e/file-drop/pkg/db"
 )
 
 func GetFileByID(id string) (name string, path string, err error) {
@@ -13,7 +14,7 @@ func GetFileByID(id string) (name string, path string, err error) {
 
 	result, err := instance.Query(statement, id)
 	if err != nil {
-		return "", "", errors.New(fmt.Sprintf("Couldn't exect query %s", err))
+		return "", "", fmt.Errorf("couldn't exect query %s", err)
 	}
 
 	defer result.Close()

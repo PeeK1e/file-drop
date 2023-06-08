@@ -1,10 +1,11 @@
 package models
 
 import (
-	"cleaner/db"
-	"cleaner/util"
 	"database/sql"
 	"log"
+
+	"gitlab.com/PeeK1e/file-drop/pkg/db"
+	"gitlab.com/PeeK1e/file-drop/pkg/util"
 )
 
 func RemoveExpiredFiles() {

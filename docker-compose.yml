@@ -1,18 +1,23 @@
 version: '3.3'
+
+volumes:
+  files:
+  pgdata:
+
 services:
-  db:
+  postgres:
     image: postgres:15.2-alpine
     environment:
-      POSTGRES_PASSWORD:  "password"
+      POSTGRES_PASSWORD:  "s3cr3t!"
       POSTGRES_USER:  "postgres"
-      POSTGRES_DB:  "uploads"
+      POSTGRES_DB:  "postgresdb"
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./src/.psql-init-scripts/:/docker-entrypoint-initdb.d/
     restart: unless-stopped
 
   file_drop:
-    image: peek1e/file-api:latest
+    image: peek1e/file-api:dev
     build: ./src/server
     volumes:
       - files:/app/storage
@@ -20,16 +25,16 @@ services:
       - 8081:8080
     restart: unless-stopped
     depends_on:
-      - db
+      - postgres
 
   file_cleaner:
-    image: peek1e/file-cleaner:latest
+    image: peek1e/file-cleaner:dev
     build: ./src/cleaner
     volumes:
       - files:/app/storage
     restart: unless-stopped
     depends_on:
-      - db
+      - postgres
   
   web_service:
     image: peek1e/file-web:latest
@@ -39,7 +44,3 @@ services:
       - 8080:80
     depends_on:
       - file_drop
-
-volumes:
-  files:
-  pgdata:

@@ -4,8 +4,9 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"server/models"
 	"strings"
+
+	"gitlab.com/PeeK1e/file-drop/pkg/models"
 )
 
 func DownloadFile(w http.ResponseWriter, r *http.Request) {

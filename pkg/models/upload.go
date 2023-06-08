@@ -3,7 +3,8 @@ package models
 import (
 	"errors"
 	"fmt"
-	"server/db"
+
+	"gitlab.com/PeeK1e/file-drop/pkg/db"
 )
 
 func SaveFile(fileID string, fileName string, filePath string) error {

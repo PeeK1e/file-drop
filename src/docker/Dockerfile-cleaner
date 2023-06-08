@@ -1,7 +1,7 @@
-FROM golang:1.17 AS base-build
+FROM golang:1.20 AS base-build
 
 WORKDIR /build
-COPY go.mod .
+COPY ["go.mod", "go.sum", "./"]
 
 RUN CGO_ENABLED=0 GOARCH=$TARGETARCH GOOS=linux go mod download
 

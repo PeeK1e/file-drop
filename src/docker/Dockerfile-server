@@ -1,7 +1,7 @@
-FROM golang:1.17 AS base-build
+FROM golang:1.20 AS base-build
 
 WORKDIR /build
-COPY go.mod .
+COPY ["go.mod", "go.sum", "./"]
 
 RUN CGO_ENABLED=0 GOARCH=$TARGETARCH GOOS=linux go mod download
 
@@ -10,7 +10,7 @@ FROM base-build AS build
 WORKDIR /build
 COPY . .
 
-RUN CGO_ENABLED=0 GOARCH=$TARGETARCH GOOS=linux go build -o filedrop cmd/file-drop/main.go
+RUN CGO_ENABLED=0 GOARCH=$TARGETARCH GOOS=linux go build -o filedrop cmd/server/main.go
 
 FROM scratch
 
