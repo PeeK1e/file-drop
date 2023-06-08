@@ -30,10 +30,6 @@ semgrep-sast:
     refs:
       - main
       - tags
-    changes:
-      - "cmd/**"
-      - "pkg/**"
-      - "src/**"
 
 # Build and Push Containers
 file-web:
