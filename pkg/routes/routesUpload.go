@@ -2,6 +2,7 @@ package routes
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"log"
 	"math/rand"
@@ -33,6 +34,7 @@ func UploadFile(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		log.Printf("Could not parse File! %s", err)
+		//! don't do this. create struct, write as response after
 		sendResponse(w, uploadResponse{
 			Reason: "Server Error",
 			Ok:     false,
@@ -105,6 +107,7 @@ func sendResponse(w http.ResponseWriter, uR uploadResponse) {
 	}
 }
 
+// ? needs update. forgot what this does exactly.
 func getRandomPathName() (string, string) {
 	var pathParts [3]string
 
@@ -118,8 +121,8 @@ func getRandomPathName() (string, string) {
 		pathParts[2] += string(letters[rand.Intn(len(letters))])
 	}
 
-	dirPathChild := "./storage/" + pathParts[0] + "/" + pathParts[1]
-	filePath := "./storage/" + pathParts[0] + "/" + pathParts[1] + "/" + pathParts[2]
+	dirPathChild := fmt.Sprintf("./storage/%s/%s", pathParts[0], pathParts[1])
+	filePath := fmt.Sprintf("./storage/%s/%s/%s", pathParts[0], pathParts[1], pathParts[2])
 
 	ok, err := models.IsPathOk(filePath)
 	if !ok {
