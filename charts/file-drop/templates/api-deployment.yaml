@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "file-drop.name" . }}-api
+  labels:
+    {{- include "file-drop.labels" . | nindent 4 }}
+spec:
+  #{{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.apiService.replicaCount }}
+  #{{- end }}
+  selector:
+    matchLabels:
+      component: api
+      {{- include "file-drop.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.apiService.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        component: api
+        {{- include "file-drop.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.apiService.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          {{ if .Values.extraEnvSecretName }}
+          envFrom:
+            - secretRef:
+                name: {{ .Values.extraEnvSecretName }}
+          {{ end }}
+          securityContext:
+            {{- toYaml .Values.apiService.securityContext | nindent 12 }}
+          image: "{{ .Values.apiService.image.repository }}:{{ .Values.apiService.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.apiService.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.apiService.service.port }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: {{ .Values.apiService.service.port }}
+          readinessProbe:
+            httpGet:
+              path: /
+              port: {{ .Values.apiService.service.port }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.apiService.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.apiService.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.apiService.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

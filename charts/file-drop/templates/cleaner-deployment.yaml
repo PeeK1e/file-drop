@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "file-drop.name" . }}-cleaner
+  labels:
+    {{- include "file-drop.labels" . | nindent 4 }}
+spec:
+  #{{- if not .Values.autoscaling.enabled }}
+  replicas: {{ .Values.cleanerService.replicaCount }}
+  #{{- end }}
+  selector:
+    matchLabels:
+      component: api
+      {{- include "file-drop.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.cleanerService.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        component: api
+        {{- include "file-drop.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.cleanerService.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          {{ if .Values.extraEnvSecretName }}
+          envFrom:
+            - secretRef:
+                name: {{ .Values.extraEnvSecretName }}
+          {{ end }}
+          securityContext:
+            {{- toYaml .Values.cleanerService.securityContext | nindent 12 }}
+          image: "{{ .Values.cleanerService.image.repository }}:{{ .Values.cleanerService.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.cleanerService.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.cleanerService.service.port }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: {{ .Values.cleanerService.service.port }}
+          readinessProbe:
+            httpGet:
+              path: /
+              port: {{ .Values.cleanerService.service.port }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.cleanerService.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.cleanerService.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.cleanerService.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
