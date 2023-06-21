@@ -4,6 +4,10 @@ volumes:
   files:
   pgdata:
 
+networks:
+  fdnet:
+    name: fd_net
+
 services:
   postgres:
     image: docker.io/postgres:15.2-alpine
@@ -15,6 +19,8 @@ services:
       - pgdata:/var/lib/postgresql/data
       - ./src/.psql-init-scripts/:/docker-entrypoint-initdb.d/
     restart: unless-stopped
+    networks:
+      - fdnet
 
   file_drop:
     image: docker.io/peek1e/file-api:dev
@@ -25,6 +31,8 @@ services:
     restart: unless-stopped
     depends_on:
       - postgres
+    networks:
+      - fdnet
 
   file_cleaner:
     image: peek1e/file-cleaner:dev
@@ -33,7 +41,9 @@ services:
     restart: unless-stopped
     depends_on:
       - postgres
-  
+    networks:
+      - fdnet
+
   web_service:
     image: docker.io/peek1e/file-web:latest
     restart: unless-stopped
@@ -41,3 +51,5 @@ services:
       - 8080:80
     depends_on:
       - file_drop
+    networks:
+      - fdnet
