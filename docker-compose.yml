@@ -6,7 +6,7 @@ volumes:
 
 services:
   postgres:
-    image: postgres:15.2-alpine
+    image: docker.io/postgres:15.2-alpine
     environment:
       POSTGRES_PASSWORD:  "s3cr3t!"
       POSTGRES_USER:  "postgres"
@@ -17,8 +17,7 @@ services:
     restart: unless-stopped
 
   file_drop:
-    image: peek1e/file-api:dev
-    build: ./src/server
+    image: docker.io/peek1e/file-api:dev
     volumes:
       - files:/app/storage
     ports:
@@ -29,7 +28,6 @@ services:
 
   file_cleaner:
     image: peek1e/file-cleaner:dev
-    build: ./src/cleaner
     volumes:
       - files:/app/storage
     restart: unless-stopped
@@ -37,8 +35,7 @@ services:
       - postgres
   
   web_service:
-    image: peek1e/file-web:latest
-    build: ./src/webclient
+    image: docker.io/peek1e/file-web:latest
     restart: unless-stopped
     ports:
       - 8080:80

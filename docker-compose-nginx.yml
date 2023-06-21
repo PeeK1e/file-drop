@@ -4,9 +4,13 @@ volumes:
   files:
   pgdata:
 
+networks:
+  fdnet:
+    name: fd_net
+
 services:
   nginx:
-    image: nginx:1.22-alpine
+    image: docker.io/nginx:1.22-alpine
     ports:
       - 8080:80
     volumes:
@@ -14,8 +18,11 @@ services:
     depends_on:
       - web_service
       - file_drop
+    networks:
+      - fdnet
+
   postgres:
-    image: postgres:15.2-alpine
+    image: docker.io/postgres:15.2-alpine
     environment:
       POSTGRES_PASSWORD:  "s3cr3t!"
       POSTGRES_USER:  "postgres"
@@ -24,28 +31,43 @@ services:
       - pgdata:/var/lib/postgresql/data
       - ./src/.psql-init-scripts/:/docker-entrypoint-initdb.d/
     restart: unless-stopped
+    networks:
+      - fdnet
 
   file_drop:
-    image: peek1e/file-api:dev
-    build: ./src/server
+    image: docker.io/peek1e/file-api:latest
+    environment:
+      FD_DB_HOST: "postgres"
+      FD_DB_USER: "postgres"
+      FD_DB_NAME: "postgresdb"
+      FD_DB_PASSWORD: "s3cr3t!"
     volumes:
       - files:/app/storage
     restart: unless-stopped
     depends_on:
       - postgres
+    networks:
+      - fdnet
 
   file_cleaner:
-    image: peek1e/file-cleaner:dev
-    build: ./src/cleaner
+    image: docker.io/peek1e/file-cleaner:latest
+    environment:
+      FD_DB_HOST: "postgres"
+      FD_DB_USER: "postgres"
+      FD_DB_NAME: "postgresdb"
+      FD_DB_PASSWORD: "s3cr3t!"
     volumes:
       - files:/app/storage
     restart: unless-stopped
     depends_on:
       - postgres
+    networks:
+      - fdnet
   
   web_service:
-    image: peek1e/file-web:latest
-    build: ./src/webclient
+    image: docker.io/peek1e/file-web:latest
     restart: unless-stopped
     depends_on:
       - file_drop
+    networks:
+      - fdnet
