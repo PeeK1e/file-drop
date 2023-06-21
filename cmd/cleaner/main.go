@@ -16,15 +16,15 @@ func main() {
 
 	c := config.NewConfig()
 
-	sigChannel := make(chan os.Signal, 1)
-	signal.Notify(sigChannel, syscall.SIGINT, syscall.SIGTERM)
-
 	// Initialise the Database
 	for !db.NewDB(*c.DbSettings) {
 		return
 	}
 
 	ticker := time.Ticker{C: time.Tick(10 * time.Minute)}
+
+	sigChannel := make(chan os.Signal, 1)
+	signal.Notify(sigChannel, syscall.SIGINT, syscall.SIGTERM)
 
 	select {
 	case <-ticker.C:

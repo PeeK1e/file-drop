@@ -1,3 +1,26 @@
-FROM nginx:1.22-alpine
+FROM nginx:1.22-alpine AS web
 
-COPY ["html", "/usr/share/nginx/html"]
+ARG USER=nginx
+
+# Add new user
+RUN deluser nginx || true && \
+    adduser -u 10001 -D -H $USER
+
+# NGINX configuration
+RUN sed -i "s/user *nginx;/user $USER;/g" /etc/nginx/nginx.conf
+RUN sed -i "s/listen *80;/listen 8080;/g" /etc/nginx/conf.d/default.conf
+# NGINX pid file
+RUN touch /var/run/nginx.pid && \
+    chown $USER:$USER /var/run/nginx.pid && \
+    chmod 0770 /var/run/nginx.pid
+# Make cache dir writable
+RUN mkdir -p /var/cache/nginx/ &&\
+    chown $USER:$USER -R /var/cache/nginx/
+
+# Copy web files 
+COPY ["./src/webclient/html", "/usr/share/nginx/html"]
+RUN chown $USER:$USER -R /usr/share/nginx/
+
+# Drop root user
+USER $USER
+

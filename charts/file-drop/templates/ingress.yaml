@@ -1,6 +1,5 @@
 {{- if .Values.ingress.enabled -}}
-{{- $fullName := include "file-drop.fullname" . -}}
-{{- $svcPort := .Values.service.port -}}
+{{ $chartName := include "file-drop.name" . }}
 {{- if and .Values.ingress.className (not (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion)) }}
   {{- if not (hasKey .Values.ingress.annotations "kubernetes.io/ingress.class") }}
   {{- $_ := set .Values.ingress.annotations "kubernetes.io/ingress.class" .Values.ingress.className}}
@@ -15,7 +14,7 @@ apiVersion: extensions/v1beta1
 {{- end }}
 kind: Ingress
 metadata:
-  name: {{ $fullName }}
+  name: {{ include "file-drop.name" . }}-ingress
   labels:
     {{- include "file-drop.labels" . | nindent 4 }}
   {{- with .Values.ingress.annotations }}
@@ -41,21 +40,33 @@ spec:
     - host: {{ .host | quote }}
       http:
         paths:
-          {{- range .paths }}
-          - path: {{ .path }}
-            {{- if and .pathType (semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion) }}
-            pathType: {{ .pathType }}
+          - path: /
+            {{- if (semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion) }}
+            pathType: ImplementationSpecific
             {{- end }}
             backend:
               {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
               service:
-                name: {{ $fullName }}
+                name: "{{ $chartName }}-web"
                 port:
-                  number: {{ $svcPort }}
+                  number: {{ $.Values.cleanerService.service.port }}
               {{- else }}
-              serviceName: {{ $fullName }}
-              servicePort: {{ $svcPort }}
+              serviceName: "{{ $chartName }}-web"
+              servicePort: {{ $.Values.cleanerService.service.port }}
               {{- end }}
-          {{- end }}
+          - path: /api
+            {{- if (semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion) }}
+            pathType: ImplementationSpecific
+            {{- end }}
+            backend:
+              {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+              service:
+                name: "{{ $chartName }}-api"
+                port:
+                  number: {{ $.Values.cleanerService.service.port }}
+              {{- else }}
+              serviceName: "{{ $chartName }}-api"
+              servicePort: {{ $.Values.cleanerService.service.port }}
+              {{- end }}
     {{- end }}
 {{- end }}

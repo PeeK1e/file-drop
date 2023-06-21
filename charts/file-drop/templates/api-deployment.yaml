@@ -5,9 +5,7 @@ metadata:
   labels:
     {{- include "file-drop.labels" . | nindent 4 }}
 spec:
-  #{{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.apiService.replicaCount }}
-  #{{- end }}
   selector:
     matchLabels:
       component: api

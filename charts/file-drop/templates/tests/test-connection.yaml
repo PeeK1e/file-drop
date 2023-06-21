@@ -11,5 +11,5 @@ spec:
     - name: wget
       image: busybox
       command: ['wget']
-      args: ['{{ include "file-drop.fullname" . }}:{{ .Values.service.port }}']
+      args: ['{{ include "file-drop.fullname" . }}-api:{{ .Values.apiService.service.port }}']
   restartPolicy: Never

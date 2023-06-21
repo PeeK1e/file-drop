@@ -20,9 +20,6 @@ func main() {
 
 	log.Println("STARTING UP")
 
-	sigChannel := make(chan os.Signal, 1)
-	signal.Notify(sigChannel, syscall.SIGINT, syscall.SIGTERM)
-
 	// creating directory if non existent
 	err := os.Mkdir(storagePath, 0764)
 	if err != nil {
@@ -40,6 +37,9 @@ func main() {
 	http.HandleFunc("/upload", routes.UploadFile)
 
 	go startHttpServer(*c.HttpServer.ListenAddress)
+
+	sigChannel := make(chan os.Signal, 1)
+	signal.Notify(sigChannel, syscall.SIGINT, syscall.SIGTERM)
 
 	<-sigChannel
 	log.Print("Caught shutdown signal. Terminating.")

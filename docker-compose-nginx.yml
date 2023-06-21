@@ -42,7 +42,7 @@ services:
       FD_DB_NAME: "postgresdb"
       FD_DB_PASSWORD: "s3cr3t!"
     volumes:
-      - files:/app/storage
+      - files:/app/storage:rw,uid=10001,gid=10001
     restart: unless-stopped
     depends_on:
       - postgres
@@ -57,7 +57,7 @@ services:
       FD_DB_NAME: "postgresdb"
       FD_DB_PASSWORD: "s3cr3t!"
     volumes:
-      - files:/app/storage
+      - files:/app/storage:rw,uid=10001,gid=10001
     restart: unless-stopped
     depends_on:
       - postgres

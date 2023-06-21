@@ -28,13 +28,14 @@ func NewDB(c config.DatabaseSettings) bool {
 	// retry db connection n times
 	// where n is defined by the configuration settings
 	count := 0
-	for nil == GetInstance() {
-		time.Sleep(time.Second)
+	for nil != GetInstance().Ping() {
+		time.Sleep(time.Second * 5)
 		if count >= *c.ConnectionRetryCount {
 			log.Printf("Could not open databse connection to host %s on port %s", *c.HOSTNAME, *c.PORT)
 			return false
 		}
 		count++
+		log.Printf("Retry Count: %d", count)
 	}
 
 	if err := GetInstance().Ping(); err != nil {
@@ -56,6 +57,7 @@ func GetInstance() *sql.DB {
 		err := error(nil)
 		db, err = sql.Open("postgres", psqlConnectionString)
 		if err != nil {
+			db = nil
 			log.Printf("Could not open Connection to Database %s", err)
 		}
 	}

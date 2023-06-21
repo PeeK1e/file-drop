@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "file-drop.name" . }}-web
+  labels:
+    {{- include "file-drop.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.webService.replicaCount }}
+  selector:
+    matchLabels:
+      component: api
+      {{- include "file-drop.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      {{- with .Values.webService.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        component: api
+        {{- include "file-drop.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.webService.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.webService.securityContext | nindent 12 }}
+          image: "{{ .Values.webService.image.repository }}:{{ .Values.webService.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.webService.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.webService.service.port }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: {{ .Values.webService.service.port }}
+          readinessProbe:
+            httpGet:
+              path: /
+              port: {{ .Values.webService.service.port }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: {{ include "file-drop.name" . }}-empty-dir
+              mountPath: /var/cache/nginx/
+            - name: {{ include "file-drop.name" . }}-pid
+              mountPath: /var/run/
+      {{- with .Values.webService.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.webService.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.webService.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: {{ include "file-drop.name" . }}-empty-dir
+          emptydir: {}
+        - name: {{ include "file-drop.name" . }}-pid
+          emptydir: {}
