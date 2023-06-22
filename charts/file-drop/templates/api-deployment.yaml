@@ -43,14 +43,21 @@ spec:
               protocol: TCP
           livenessProbe:
             httpGet:
-              path: /
+              path: /healthz
               port: {{ .Values.apiService.service.port }}
           readinessProbe:
             httpGet:
-              path: /
+              path: /healthz
               port: {{ .Values.apiService.service.port }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: data-dir
+              mountPath: /app/storage
+      volumes:
+      - name: data-dir
+        persistentVolumeClaim:
+          claimName: {{ include "file-drop.name" . }}
       {{- with .Values.apiService.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
@@ -63,3 +70,6 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+
+
+

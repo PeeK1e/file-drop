@@ -35,6 +35,7 @@ func main() {
 
 	http.HandleFunc("/pv/", routes.DownloadFile)
 	http.HandleFunc("/upload", routes.UploadFile)
+	http.HandleFunc("/healthz", routes.Healthz)
 
 	go startHttpServer(*c.HttpServer.ListenAddress)
 

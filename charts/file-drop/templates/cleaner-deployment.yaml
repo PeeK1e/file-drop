@@ -37,20 +37,15 @@ spec:
             {{- toYaml .Values.cleanerService.securityContext | nindent 12 }}
           image: "{{ .Values.cleanerService.image.repository }}:{{ .Values.cleanerService.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.cleanerService.image.pullPolicy }}
-          ports:
-            - name: http
-              containerPort: {{ .Values.cleanerService.service.port }}
-              protocol: TCP
-          livenessProbe:
-            httpGet:
-              path: /
-              port: {{ .Values.cleanerService.service.port }}
-          readinessProbe:
-            httpGet:
-              path: /
-              port: {{ .Values.cleanerService.service.port }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+          - name: data-dir
+            mountPath: /app/storage
+      volumes:
+      - name: data-dir
+        persistentVolumeClaim:
+          claimName: {{ include "file-drop.name" . }}
       {{- with .Values.cleanerService.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

@@ -11,6 +11,14 @@ imagePullSecrets: []
 # See https://gitlab.com/PeeK1e/file-drop#cli-flags-env-vars on what can be used
 extraEnvSecretName: {}
 
+#- Storage Config
+persistence:
+  # Must support ReadWriteMany
+  storageClass: ""
+  size: "50Gi"
+  # overwrites other persistence settings
+  existingClaimName: null
+
 #- The API Service Component
 # makes database calls and serves/accepts content
 apiService:
@@ -42,9 +50,6 @@ apiService:
 
 cleanerService:
   replicaCount: 2
-  service:
-    type: ClusterIP
-    port: 8080
   image:
     repository: docker.io/peek1e/file-cleaner
     tag: ""
