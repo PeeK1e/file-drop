@@ -54,7 +54,21 @@ spec:
               serviceName: "{{ $chartName }}-web"
               servicePort: {{ $.Values.cleanerService.service.port }}
               {{- end }}
-          - path: /api
+          - path: /upload
+            {{- if (semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion) }}
+            pathType: ImplementationSpecific
+            {{- end }}
+            backend:
+              {{- if semverCompare ">=1.19-0" $.Capabilities.KubeVersion.GitVersion }}
+              service:
+                name: "{{ $chartName }}-api"
+                port:
+                  number: {{ $.Values.cleanerService.service.port }}
+              {{- else }}
+              serviceName: "{{ $chartName }}-api"
+              servicePort: {{ $.Values.cleanerService.service.port }}
+              {{- end }}
+          - path: /pv
             {{- if (semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion) }}
             pathType: ImplementationSpecific
             {{- end }}

@@ -5,6 +5,20 @@
 nameOverride: ""
 fullnameOverride: ""
 
+#- Globals valid in every component
+# the security contexts are preconfigured to work with the hardenend contaienr images
+global:
+  podAnnotations: {}
+  podSecurityContext:
+    fsGroup: 10001
+  securityContext:
+    capabilities:
+      drop:
+        - NET_RAW
+    readOnlyRootFilesystem: true
+    runAsNonRoot: true
+    runAsUser: 10001
+
 imagePullSecrets: []
 
 #- Secret holding environment Variables used by the API and Cleaner
@@ -30,20 +44,6 @@ apiService:
     repository: docker.io/peek1e/file-api
     tag: ""
     pullPolicy: IfNotPresent
-
-  podAnnotations: {}
-
-  podSecurityContext:
-    {}
-    # fsGroup: 2000
-  securityContext:
-    capabilities:
-      drop:
-        - NET_RAW
-    readOnlyRootFilesystem: true
-    runAsNonRoot: true
-    runAsUser: 10001
-
   nodeSelector: {}
   tolerations: []
   affinity: {}
@@ -54,18 +54,6 @@ cleanerService:
     repository: docker.io/peek1e/file-cleaner
     tag: ""
     pullPolicy: IfNotPresent
-
-  podAnnotations: {}
-  podSecurityContext:
-    {}
-    # fsGroup: 2000
-  securityContext:
-    capabilities:
-      drop:
-        - NET_RAW
-    readOnlyRootFilesystem: true
-    runAsNonRoot: true
-    runAsUser: 10001
   nodeSelector: {}
   tolerations: []
   affinity: {}
@@ -79,18 +67,6 @@ webService:
     repository: docker.io/peek1e/file-web
     tag: ""
     pullPolicy: IfNotPresent
-
-  podAnnotations: {}
-  podSecurityContext:
-    {}
-    # fsGroup: 2000
-  securityContext:
-    capabilities:
-      drop:
-        - NET_RAW
-    readOnlyRootFilesystem: true
-    runAsNonRoot: true
-    runAsUser: 10001
   nodeSelector: {}
   tolerations: []
   affinity: {}

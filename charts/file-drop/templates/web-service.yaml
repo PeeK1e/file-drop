@@ -12,5 +12,5 @@ spec:
       protocol: TCP
       name: http
   selector:
-    component: api
+    component: web
     {{- include "file-drop.selectorLabels" . | nindent 4 }}

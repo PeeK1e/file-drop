@@ -3,21 +3,22 @@ kind: Deployment
 metadata:
   name: {{ include "file-drop.name" . }}-web
   labels:
+    component: web
     {{- include "file-drop.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.webService.replicaCount }}
   selector:
     matchLabels:
-      component: api
+      component: web
       {{- include "file-drop.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.webService.podAnnotations }}
+      {{- with .Values.global.podAnnotations }}
       annotations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        component: api
+        component: web
         {{- include "file-drop.selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
@@ -25,11 +26,11 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       securityContext:
-        {{- toYaml .Values.webService.podSecurityContext | nindent 8 }}
+        {{- toYaml .Values.global.podSecurityContext | nindent 8 }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
-            {{- toYaml .Values.webService.securityContext | nindent 12 }}
+            {{- toYaml .Values.global.securityContext | nindent 12 }}
           image: "{{ .Values.webService.image.repository }}:{{ .Values.webService.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.webService.image.pullPolicy }}
           ports:
@@ -65,6 +66,6 @@ spec:
       {{- end }}
       volumes:
         - name: {{ include "file-drop.name" . }}-empty-dir
-          emptydir: {}
+          emptyDir: {}
         - name: {{ include "file-drop.name" . }}-pid
-          emptydir: {}
+          emptyDir: {}

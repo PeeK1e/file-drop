@@ -3,6 +3,7 @@ kind: Deployment
 metadata:
   name: {{ include "file-drop.name" . }}-api
   labels:
+    component: api
     {{- include "file-drop.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.apiService.replicaCount }}
@@ -12,7 +13,7 @@ spec:
       {{- include "file-drop.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.apiService.podAnnotations }}
+      {{- with .Values.global.podAnnotations }}
       annotations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
@@ -25,7 +26,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       securityContext:
-        {{- toYaml .Values.apiService.podSecurityContext | nindent 8 }}
+        {{- toYaml .Values.global.podSecurityContext | nindent 8 }}
       containers:
         - name: {{ .Chart.Name }}
           {{ if .Values.extraEnvSecretName }}
@@ -34,7 +35,7 @@ spec:
                 name: {{ .Values.extraEnvSecretName }}
           {{ end }}
           securityContext:
-            {{- toYaml .Values.apiService.securityContext | nindent 12 }}
+            {{- toYaml .Values.global.securityContext | nindent 12 }}
           image: "{{ .Values.apiService.image.repository }}:{{ .Values.apiService.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.apiService.image.pullPolicy }}
           ports:
@@ -57,7 +58,11 @@ spec:
       volumes:
       - name: data-dir
         persistentVolumeClaim:
+        {{ if .Values.persistence.existingClaimName }}
+          claimName: {{ .Values.persistence.existingClaimName }}
+        {{ else }}
           claimName: {{ include "file-drop.name" . }}
+        {{ end }}
       {{- with .Values.apiService.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

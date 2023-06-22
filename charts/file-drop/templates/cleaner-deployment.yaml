@@ -8,16 +8,16 @@ spec:
   replicas: {{ .Values.cleanerService.replicaCount }}
   selector:
     matchLabels:
-      component: api
+      component: cleaner
       {{- include "file-drop.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.cleanerService.podAnnotations }}
+      {{- with .Values.global.podAnnotations }}
       annotations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       labels:
-        component: api
+        component: cleaner
         {{- include "file-drop.selectorLabels" . | nindent 8 }}
     spec:
       {{- with .Values.imagePullSecrets }}
@@ -25,7 +25,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       securityContext:
-        {{- toYaml .Values.cleanerService.podSecurityContext | nindent 8 }}
+        {{- toYaml .Values.global.podSecurityContext | nindent 8 }}
       containers:
         - name: {{ .Chart.Name }}
           {{ if .Values.extraEnvSecretName }}
@@ -34,7 +34,7 @@ spec:
                 name: {{ .Values.extraEnvSecretName }}
           {{ end }}
           securityContext:
-            {{- toYaml .Values.cleanerService.securityContext | nindent 12 }}
+            {{- toYaml .Values.global.securityContext | nindent 12 }}
           image: "{{ .Values.cleanerService.image.repository }}:{{ .Values.cleanerService.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.cleanerService.image.pullPolicy }}
           resources:
@@ -45,7 +45,11 @@ spec:
       volumes:
       - name: data-dir
         persistentVolumeClaim:
+        {{ if .Values.persistence.existingClaimName }}
+          claimName: {{ .Values.persistence.existingClaimName }}
+        {{ else }}
           claimName: {{ include "file-drop.name" . }}
+        {{ end }}
       {{- with .Values.cleanerService.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
