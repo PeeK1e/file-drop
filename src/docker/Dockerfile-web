@@ -10,7 +10,8 @@ RUN deluser nginx || true && \
 RUN sed -i "s/user *nginx;/user $USER;/g" /etc/nginx/nginx.conf
 RUN sed -i "s/listen *80;/listen 8080;/g" /etc/nginx/conf.d/default.conf
 # NGINX pid file
-RUN touch /var/run/nginx.pid && \
+RUN mkdir -p /var/run && \
+    touch /var/run/nginx.pid && \
     chown $USER:$USER /var/run/nginx.pid && \
     chmod 0770 /var/run/nginx.pid
 # Make cache dir writable
