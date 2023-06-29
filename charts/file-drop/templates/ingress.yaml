@@ -49,10 +49,10 @@ spec:
               service:
                 name: "{{ $chartName }}-web"
                 port:
-                  number: {{ $.Values.cleanerService.service.port }}
+                  number: {{ $.Values.webService.service.port }}
               {{- else }}
               serviceName: "{{ $chartName }}-web"
-              servicePort: {{ $.Values.cleanerService.service.port }}
+              servicePort: {{ $.Values.webService.service.port }}
               {{- end }}
           - path: /upload
             {{- if (semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion) }}
@@ -63,10 +63,10 @@ spec:
               service:
                 name: "{{ $chartName }}-api"
                 port:
-                  number: {{ $.Values.cleanerService.service.port }}
+                  number: {{ $.Values.apiService.service.port }}
               {{- else }}
               serviceName: "{{ $chartName }}-api"
-              servicePort: {{ $.Values.cleanerService.service.port }}
+              servicePort: {{ $.Values.apiService.service.port }}
               {{- end }}
           - path: /pv
             {{- if (semverCompare ">=1.18-0" $.Capabilities.KubeVersion.GitVersion) }}
@@ -77,10 +77,10 @@ spec:
               service:
                 name: "{{ $chartName }}-api"
                 port:
-                  number: {{ $.Values.cleanerService.service.port }}
+                  number: {{ $.Values.apiService.service.port }}
               {{- else }}
               serviceName: "{{ $chartName }}-api"
-              servicePort: {{ $.Values.cleanerService.service.port }}
+              servicePort: {{ $.Values.apiService.service.port }}
               {{- end }}
     {{- end }}
 {{- end }}

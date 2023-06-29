@@ -1,0 +1,8 @@
+{{ $host := index .Values.ingress.hosts 0 }}
+Thanks for using the Chart please report any issues to ryuko@peek1e.eu
+
+{{ if .Values.ingress.enabled }}
+The App will be available at http://{{ $host.host }}
+{{ else }}
+The App has no ingress enabled and will only be available inside the Cluster or NodeIP
+{{ end }}

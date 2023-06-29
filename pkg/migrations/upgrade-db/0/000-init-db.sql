@@ -1,6 +1,6 @@
-DROP TABLE IF EXISTS file;
-
-CREATE TABLE file (
+-- Since Migrations will be used don't DROP TABLE
+-- DROP TABLE IF EXISTS file;
+CREATE TABLE IF NOT EXISTS file (
   ID SERIAL PRIMARY KEY,
   KeyID VARCHAR(24),
   FileName VARCHAR(100),

@@ -21,17 +21,20 @@ global:
 
 imagePullSecrets: []
 
+serviceAccount:
+  create: false
+
 #- Secret holding environment Variables used by the API and Cleaner
 # See https://gitlab.com/PeeK1e/file-drop#cli-flags-env-vars on what can be used
-extraEnvSecretName: {}
+extraEnvSecretName: "fd-secret"
 
 #- Storage Config
 persistence:
   # Must support ReadWriteMany
-  storageClass: ""
+  storageClass: "rook-cephfs"
   size: "50Gi"
   # overwrites other persistence settings
-  existingClaimName: null
+  existingClaimName: ""
 
 #- The API Service Component
 # makes database calls and serves/accepts content
@@ -73,17 +76,17 @@ webService:
 
 ingress:
   enabled: true
-  className: ""
+  className: "nginx"
   annotations:
-    {}
     # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
+    kubernetes.io/tls-acme: "true"
+    cert-manager.io/cluster-issuer: letsencrypt-prod
   hosts:
-    - host: my.file.drop
-  tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
+    - host: filedroptest.debian.testlab.cloudical.in
+  tls:
+    - secretName: chart-example-tls
+      hosts:
+        - filedroptest.debian.testlab.cloudical.in
 
 resources:
   {}

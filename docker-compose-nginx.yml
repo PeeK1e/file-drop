@@ -35,7 +35,7 @@ services:
       - fdnet
 
   file_drop:
-    image: docker.io/peek1e/file-api:latest
+    image: docker.io/peek1e/file-api:dev
     environment:
       FD_DB_HOST: "postgres"
       FD_DB_USER: "postgres"
@@ -50,7 +50,7 @@ services:
       - fdnet
 
   file_cleaner:
-    image: docker.io/peek1e/file-cleaner:latest
+    image: docker.io/peek1e/file-cleaner:dev
     environment:
       FD_DB_HOST: "postgres"
       FD_DB_USER: "postgres"
@@ -65,7 +65,7 @@ services:
       - fdnet
   
   web_service:
-    image: docker.io/peek1e/file-web:latest
+    image: docker.io/peek1e/file-web:dev
     restart: unless-stopped
     depends_on:
       - file_drop
