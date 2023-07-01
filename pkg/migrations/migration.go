@@ -1,6 +1,7 @@
 package migrations
 
 import (
+	"database/sql"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -34,6 +35,12 @@ func Run() {
 		return
 	}
 
+	runScripts(version, dirs, db)
+
+	setDirtyFlag(db, 0)
+}
+
+func runScripts(version int, dirs []string, db *sql.DB) {
 	for i, v := range dirs {
 		// skip dir if less than migration version
 		if i < version {
@@ -64,6 +71,4 @@ func Run() {
 		version++
 		setMigrationVersion(db, version)
 	}
-
-	setDirtyFlag(db, 0)
 }

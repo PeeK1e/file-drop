@@ -26,15 +26,32 @@ serviceAccount:
 
 #- Secret holding environment Variables used by the API and Cleaner
 # See https://gitlab.com/PeeK1e/file-drop#cli-flags-env-vars on what can be used
-extraEnvSecretName: "fd-secret"
+extraEnvSecretName: ""
 
 #- Storage Config
 persistence:
   # Must support ReadWriteMany
-  storageClass: "rook-cephfs"
+  storageClass: ""
   size: "50Gi"
   # overwrites other persistence settings
   existingClaimName: ""
+
+#- Migrations settings
+migrations:
+  image:
+    repository: "docker.io/peek1e/file-migrations"
+    tag: ""
+    pullPolicy: IfNotPresent
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+  resources: {}
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
 
 #- The API Service Component
 # makes database calls and serves/accepts content
@@ -50,6 +67,13 @@ apiService:
   nodeSelector: {}
   tolerations: []
   affinity: {}
+  resources: {}
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
 
 cleanerService:
   replicaCount: 2
@@ -60,6 +84,13 @@ cleanerService:
   nodeSelector: {}
   tolerations: []
   affinity: {}
+  resources: {}
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
 
 webService:
   replicaCount: 2
@@ -73,6 +104,13 @@ webService:
   nodeSelector: {}
   tolerations: []
   affinity: {}
+  resources: {}
+  # limits:
+  #   cpu: 100m
+  #   memory: 128Mi
+  # requests:
+  #   cpu: 100m
+  #   memory: 128Mi
 
 ingress:
   enabled: true
@@ -87,16 +125,3 @@ ingress:
     - secretName: chart-example-tls
       hosts:
         - filedroptest.debian.testlab.cloudical.in
-
-resources:
-  {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #   cpu: 100m
-  #   memory: 128Mi
-  # requests:
-  #   cpu: 100m
-  #   memory: 128Mi

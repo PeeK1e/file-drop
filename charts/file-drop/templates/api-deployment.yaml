@@ -29,15 +29,18 @@ spec:
         {{- toYaml .Values.global.podSecurityContext | nindent 8 }}
       containers:
         - name: {{ .Chart.Name }}
+          image: "{{ .Values.apiService.image.repository }}:{{ .Values.apiService.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.apiService.image.pullPolicy }}
           {{ if .Values.extraEnvSecretName }}
           envFrom:
             - secretRef:
                 name: {{ .Values.extraEnvSecretName }}
           {{ end }}
+          env:
+            - name: FD_HTTP_ADDRESS
+              value: "0.0.0.0:{{ .Values.apiService.service.port }}"
           securityContext:
             {{- toYaml .Values.global.securityContext | nindent 12 }}
-          image: "{{ .Values.apiService.image.repository }}:{{ .Values.apiService.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.apiService.image.pullPolicy }}
           ports:
             - name: http
               containerPort: {{ .Values.apiService.service.port }}
@@ -51,7 +54,7 @@ spec:
               path: /healthz
               port: {{ .Values.apiService.service.port }}
           resources:
-            {{- toYaml .Values.resources | nindent 12 }}
+            {{- toYaml .Values.apiService.resources | nindent 12 }}
           volumeMounts:
             - name: data-dir
               mountPath: /app/storage

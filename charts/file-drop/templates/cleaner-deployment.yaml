@@ -28,17 +28,17 @@ spec:
         {{- toYaml .Values.global.podSecurityContext | nindent 8 }}
       containers:
         - name: {{ .Chart.Name }}
+          image: "{{ .Values.cleanerService.image.repository }}:{{ .Values.cleanerService.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.cleanerService.image.pullPolicy }}
           {{ if .Values.extraEnvSecretName }}
           envFrom:
             - secretRef:
                 name: {{ .Values.extraEnvSecretName }}
           {{ end }}
+          resources:
+            {{- toYaml .Values.apiService.resources | nindent 12 }}
           securityContext:
             {{- toYaml .Values.global.securityContext | nindent 12 }}
-          image: "{{ .Values.cleanerService.image.repository }}:{{ .Values.cleanerService.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.cleanerService.image.pullPolicy }}
-          resources:
-            {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
           - name: data-dir
             mountPath: /app/storage
