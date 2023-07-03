@@ -6,27 +6,31 @@ nameOverride: ""
 fullnameOverride: ""
 
 #- Globals valid in every component
-# the security contexts are preconfigured to work with the hardenend contaienr images
 global:
   podAnnotations: {}
-  podSecurityContext:
-    fsGroup: 10001
-  securityContext:
-    capabilities:
-      drop:
-        - NET_RAW
-    readOnlyRootFilesystem: true
-    runAsNonRoot: true
-    runAsUser: 10001
 
+# provide existing pull secrets
 imagePullSecrets: []
-
-serviceAccount:
-  create: false
 
 #- Secret holding environment Variables used by the API and Cleaner
 # See https://gitlab.com/PeeK1e/file-drop#cli-flags-env-vars on what can be used
-extraEnvSecretName: ""
+extraEnvSecret:
+  # Setting create to true a secret will be generated with the database secret provided below
+  create: true
+  # if create is true, name will override the auto generated name
+  # if create is false, this will set the secret name to look for in the namespace
+  # you need a secret that can be mounted to all pods requiring a database connection
+  name: ""
+  # If you have a secret containing the postgres username and password specify it here
+  database:
+    # hostname
+    hostName: "postgres"
+    # name of the secret for the database credentials
+    secretName: ""
+    # username secret key
+    usernameKey: "password"
+    # password secret key
+    passwordKey: "username"
 
 #- Storage Config
 persistence:

@@ -1,3 +1,4 @@
+{{ $secretName := "(include "file-drop.name" .)-secret" }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -26,7 +27,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       securityContext:
-        {{- toYaml .Values.global.podSecurityContext | nindent 8 }}
+        fsGroup: 10001
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.apiService.image.repository }}:{{ .Values.apiService.image.tag | default .Chart.AppVersion }}"
@@ -34,7 +35,11 @@ spec:
           {{ if .Values.extraEnvSecretName }}
           envFrom:
             - secretRef:
-                name: {{ .Values.extraEnvSecretName }}
+                {{ if .Values.extraEnvSecret.create }}
+                name: {{ .Values.extraEnvSecret.name | default $secretName }}
+                {{ else }}
+                name: {{ $secretName }}
+                {{ end }}
           {{ end }}
           env:
             - name: FD_HTTP_ADDRESS

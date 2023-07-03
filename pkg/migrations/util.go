@@ -1,12 +1,12 @@
 package migrations
 
 import (
-	"io/ioutil"
+	"os"
 	"sort"
 )
 
 func getFiles(dir string) ([]string, error) {
-	files, err := ioutil.ReadDir(dir)
+	files, err := os.ReadDir(dir)
 	if err != nil {
 		return nil, err
 	}
@@ -24,7 +24,7 @@ func getFiles(dir string) ([]string, error) {
 }
 
 func getDirs(dir string) ([]string, error) {
-	files, err := ioutil.ReadDir(dir)
+	files, err := os.ReadDir(dir)
 	if err != nil {
 		return nil, err
 	}

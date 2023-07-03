@@ -26,7 +26,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       securityContext:
-        {{- toYaml .Values.global.podSecurityContext | nindent 8 }}
+        fsGroup: 10001
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.webService.image.repository }}:{{ .Values.webService.image.tag | default .Chart.AppVersion }}"
@@ -44,7 +44,12 @@ spec:
               path: /
               port: {{ .Values.webService.service.port }}
           securityContext:
-            {{- toYaml .Values.global.securityContext | nindent 12 }}
+            capabilities:
+              drop:
+                - NET_RAW
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 10001
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:

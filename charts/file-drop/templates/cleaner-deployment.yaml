@@ -25,7 +25,7 @@ spec:
         {{- toYaml . | nindent 8 }}
       {{- end }}
       securityContext:
-        {{- toYaml .Values.global.podSecurityContext | nindent 8 }}
+        fsGroup: 10001
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.cleanerService.image.repository }}:{{ .Values.cleanerService.image.tag | default .Chart.AppVersion }}"
@@ -33,12 +33,21 @@ spec:
           {{ if .Values.extraEnvSecretName }}
           envFrom:
             - secretRef:
-                name: {{ .Values.extraEnvSecretName }}
+                {{ if .Values.extraEnvSecret.create }}
+                name: {{ .Values.extraEnvSecret.name | default $secretName }}
+                {{ else }}
+                name: {{ $secretName }}
+                {{ end }}
           {{ end }}
           resources:
             {{- toYaml .Values.apiService.resources | nindent 12 }}
           securityContext:
-            {{- toYaml .Values.global.securityContext | nindent 12 }}
+            capabilities:
+              drop:
+                - NET_RAW
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            runAsUser: 10001
           volumeMounts:
           - name: data-dir
             mountPath: /app/storage

@@ -1,46 +1,36 @@
 package migrations
 
 import (
-	"database/sql"
 	"fmt"
-	"io/ioutil"
 	"log"
+	"os"
 
 	"gitlab.com/PeeK1e/file-drop/pkg/db"
 )
 
 func Run() {
-	db := db.GetInstance()
-
-	if !checkDbInitState() {
-		log.Fatal("ERR: DB Migration Failed")
-		return
-	}
-
 	// Check if last migrations were done correctly
-	if queryIsDbDirty(db) {
+	// abort when not in clean state
+	if queryIsDbDirty() {
 		log.Fatal("ERR: Database is dirty, aborting")
 	}
-	setDirtyFlag(db, 1)
 
-	version, err := queryVersion(db)
+	version, err := queryVersion()
 	if err != nil {
-		log.Fatal("ERR: no version detected")
+		log.Fatalf("ERR: no version detected %s", err)
 		return
 	}
 
 	dirs, err := getDirs("./upgrade-db")
 	if err != nil {
-		log.Printf("ERR: Opening directory %s", err)
+		log.Fatalf("ERR: Opening directory %s", err)
 		return
 	}
 
-	runScripts(version, dirs, db)
-
-	setDirtyFlag(db, 0)
+	runScripts(version, dirs)
 }
 
-func runScripts(version int, dirs []string, db *sql.DB) {
+func runScripts(version int, dirs []string) {
 	for i, v := range dirs {
 		// skip dir if less than migration version
 		if i < version {
@@ -52,23 +42,30 @@ func runScripts(version int, dirs []string, db *sql.DB) {
 
 		files, err := getFiles(dir)
 		if err != nil {
-			log.Printf("ERR: Opening file %s", err)
+			log.Fatalf("ERR: Opening file %s", err)
 			return
+		}
+
+		// version 0 equals an empty database
+		if version >= 1 {
+			setDirtyFlag(DB_DIRTY)
 		}
 
 		for _, f := range files {
 			filepath := fmt.Sprintf("%s/%s", dir, f)
-			q, err := ioutil.ReadFile(filepath)
+			q, err := os.ReadFile(filepath)
 			if err != nil {
-				log.Printf("Can't open migration file")
+				log.Fatalf("ERR: Can't open migration file")
 			}
-
-			err = runTransaction(q, db)
+			log.Printf("INFO: Migration Level: %d, Running Script %s", version, f)
+			err = db.RunTransaction(q)
 			if err != nil {
-				log.Printf("WARN: migration no. %d, named %s failed, reason %s", version, f, err)
+				log.Fatalf("ERR: migration no. %d, named %s failed, reason %s", version, f, err)
 			}
 		}
+
 		version++
-		setMigrationVersion(db, version)
+		setMigrationVersion(version)
+		setDirtyFlag(DB_CLEAN)
 	}
 }
