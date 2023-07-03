@@ -124,8 +124,8 @@ ingress:
     kubernetes.io/tls-acme: "true"
     cert-manager.io/cluster-issuer: letsencrypt-prod
   hosts:
-    - host: filedroptest.debian.testlab.cloudical.in
+    - host: ""
   tls:
     - secretName: chart-example-tls
       hosts:
-        - filedroptest.debian.testlab.cloudical.in
+        - ""
