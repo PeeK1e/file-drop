@@ -1,3 +1,5 @@
+{{ $name := (include "file-drop.name" .) }}
+{{ $secretName := "{{ $name }}-secret"  }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
