@@ -1,9 +1,10 @@
 {{ $name := (include "file-drop.name" .) }}
-{{ $secretName := "{{ $name }}-secret"  }}
+{{ $secretName := printf "%s-%s" $name "secret" }}
+{{ $jobName := printf "%s-%s-%s" (include "file-drop.name" .) "migrations" (randAlphaNum 4 | lower) }}
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: {{ include "file-drop.name" . }}-migrations
+  name: {{ $jobName }}
   labels:
     component: migrations
     {{- include "file-drop.labels" . | nindent 4 }}
@@ -29,15 +30,9 @@ spec:
         - name: pre-upgrade-job
           image: "{{ .Values.migrations.image.repository }}:{{ .Values.migrations.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.apiService.image.pullPolicy }}
-          {{ if .Values.extraEnvSecretName }}
           envFrom:
           - secretRef:
-                {{ if .Values.extraEnvSecret.create }}
-                name: {{ .Values.extraEnvSecret.name | default $secretName }}
-                {{ else }}
-                name: {{ $secretName }}
-                {{ end }}
-          {{ end }}
+              name: {{ default $secretName $.Values.extraEnvSecret.name }}
           securityContext:
             capabilities:
               drop:
