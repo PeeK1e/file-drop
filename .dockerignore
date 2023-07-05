@@ -4,3 +4,4 @@ Dockerfile
 .vscode
 .gitignore
 .psql-init-scripts/
+hack/**

@@ -22,7 +22,8 @@ services:
       - fdnet
 
   postgres:
-    image: docker.io/postgres:15.2-alpine
+    #image: docker.io/postgres:15.2-alpine
+    image: localhost/postgres-template
     environment:
       POSTGRES_PASSWORD:  "s3cr3t!"
       POSTGRES_USER:  "postgres"
@@ -45,6 +46,7 @@ services:
     restart: unless-stopped
     depends_on:
       - postgres
+      - file_migration
     networks:
       - fdnet
 
@@ -60,26 +62,27 @@ services:
     restart: unless-stopped
     depends_on:
       - postgres
+      - file_migration
     networks:
       - fdnet
 
   file_migration:
-    image: docker.io/peek1e/file-cleaner:v2.2.0
+    image: docker.io/peek1e/file-migrations:v2.2.0
     environment:
       FD_DB_HOST: "postgres"
       FD_DB_USER: "postgres"
       FD_DB_NAME: "postgresdb"
       FD_DB_PASSWORD: "s3cr3t!"
-    restart: unless-stopped
     depends_on:
       - postgres
     networks:
       - fdnet
-  
+
   web_service:
     image: docker.io/peek1e/file-web:v2.2.0
     restart: unless-stopped
     depends_on:
       - file_drop
+      - file_migration
     networks:
       - fdnet

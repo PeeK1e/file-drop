@@ -28,9 +28,9 @@ extraEnvSecret:
     # name of the secret for the database credentials
     secretName: ""
     # username secret key
-    usernameKey: "password"
+    usernameKey: "username"
     # password secret key
-    passwordKey: "username"
+    passwordKey: "password"
 
 #- Storage Config
 persistence:

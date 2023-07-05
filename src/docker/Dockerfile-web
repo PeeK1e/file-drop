@@ -12,8 +12,8 @@ RUN sed -i "s/listen *80;/listen 8080;/g" /etc/nginx/conf.d/default.conf
 # NGINX pid file
 RUN mkdir -p /var/run && \
     touch /var/run/nginx.pid && \
-    chown $USER:$USER /var/run/nginx.pid && \
-    chmod 0770 /var/run/nginx.pid
+    chmod 0770 /var/run/nginx.pid && \
+    chown $USER:$USER /var/run/nginx.pid
 # Make cache dir writable
 RUN mkdir -p /var/cache/nginx/ &&\
     chown $USER:$USER -R /var/cache/nginx/
