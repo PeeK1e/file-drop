@@ -29,13 +29,12 @@ services:
       POSTGRES_DB:  "postgresdb"
     volumes:
       - pgdata:/var/lib/postgresql/data
-      - ./src/.psql-init-scripts/:/docker-entrypoint-initdb.d/
     restart: unless-stopped
     networks:
       - fdnet
 
   file_drop:
-    image: docker.io/peek1e/file-api:dev
+    image: docker.io/peek1e/file-api:v2.2.0
     environment:
       FD_DB_HOST: "postgres"
       FD_DB_USER: "postgres"
@@ -50,7 +49,7 @@ services:
       - fdnet
 
   file_cleaner:
-    image: docker.io/peek1e/file-cleaner:dev
+    image: docker.io/peek1e/file-cleaner:v2.2.0
     environment:
       FD_DB_HOST: "postgres"
       FD_DB_USER: "postgres"
@@ -63,9 +62,22 @@ services:
       - postgres
     networks:
       - fdnet
+
+  file_migration:
+    image: docker.io/peek1e/file-cleaner:v2.2.0
+    environment:
+      FD_DB_HOST: "postgres"
+      FD_DB_USER: "postgres"
+      FD_DB_NAME: "postgresdb"
+      FD_DB_PASSWORD: "s3cr3t!"
+    restart: unless-stopped
+    depends_on:
+      - postgres
+    networks:
+      - fdnet
   
   web_service:
-    image: docker.io/peek1e/file-web:dev
+    image: docker.io/peek1e/file-web:v2.2.0
     restart: unless-stopped
     depends_on:
       - file_drop

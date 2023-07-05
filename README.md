@@ -4,7 +4,8 @@ This is a fairly stright forward FOSS file share service. The goal is simple dro
 
 ## TL;DR
 ### Docker Compose
-Deploy the App by using the `docker-compose-nginx.yaml` to get the app running in a minute or two.
+Deploy the App by using the `docker-compose.yaml` to get the app running in a minute or two.
+The service will be reachable on port `8080` of your machine.
 
 ### Kubernetes
 See the [README.md](./charts/file-drop/) of the Chart on how to deploy things.
