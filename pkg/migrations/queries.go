@@ -25,7 +25,11 @@ func queryVersion() (int, error) {
 		return 0, nil
 	}
 
+	// defer connection close
 	defer func(r *sql.Rows) {
+		if r == nil {
+			fmt.Printf("WARN: Skipping close since Rows is nil %s", err)
+		}
 		if err := r.Close(); err != nil {
 			fmt.Printf("WARN: error on rows close %s", err)
 		}
@@ -56,7 +60,11 @@ func queryIsDbDirty() bool {
 		return false
 	}
 
+	// defer connection close
 	defer func(r *sql.Rows) {
+		if r == nil {
+			fmt.Printf("WARN: Skipping close since Rows is nil %s", err)
+		}
 		if err := r.Close(); err != nil {
 			fmt.Printf("WARN: error on rows close %s", err)
 		}
@@ -74,9 +82,9 @@ func queryIsDbDirty() bool {
 	return i >= 1
 }
 
-// Sets the `dirty_migration` flag
-// 0 == clean
-// 1 == dirty
+// Sets the `dirty_migration` flag.
+// 0 equals clean state.
+// 1 euals dirty state.
 func setDirtyFlag(value int) {
 	log.Printf("INFO: Setting Database State to %d", value)
 	q := `UPDATE meta 
@@ -89,7 +97,7 @@ func setDirtyFlag(value int) {
 	}
 }
 
-// Sets the `migration_version`
+// Sets the `migration_version` column int value
 func setMigrationVersion(value int) {
 	log.Printf("INFO: Setting Database Migration Level to %d", value)
 	q := `UPDATE meta 

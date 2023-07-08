@@ -1,7 +1,6 @@
 package models
 
 import (
-	"database/sql"
 	"log"
 
 	"gitlab.com/PeeK1e/file-drop/pkg/db"
@@ -9,45 +8,21 @@ import (
 )
 
 func RemoveExpiredFiles() {
-	instance := db.GetInstance()
+	statement := `DELETE FROM "file" WHERE "expirationtime" < NOW()::TIMESTAMP RETURNING "path"`
 
-	t, err := instance.Begin()
+	r, err := db.RunTransactionWithResult([]byte(statement))
 	if err != nil {
-		log.Printf("Error creating transaction %s", err)
-		return
-	}
-
-	statemnt := `DELETE FROM "file" WHERE "expirationtime" < NOW()::TIMESTAMP RETURNING "path"`
-
-	rows, err := t.Query(statemnt)
-	defer rows.Close()
-	if err != nil {
-		log.Printf("Could not execute statement %s", err)
-		rollback(t)
-		return
+		log.Printf("WARN: Could not delete entries %s", err)
 	}
 
 	/*	TODO: cleaner way of deleting file, on failed delete should not remove entry from DB
 	 *	Create A Log Entry in the database with failed file deletions?
 	 */
-	for rows.Next() {
-
+	for r.Next() {
 		path := ""
-		rows.Scan(&path)
+		r.Scan(&path)
 		util.DeleteFile(path)
 	}
 
-	err = t.Commit()
-	if err != nil {
-		log.Printf("Could not commit transaction %s", err)
-		rollback(t)
-		return
-	}
-}
-
-func rollback(t *sql.Tx) {
-	err := t.Rollback()
-	if err != nil {
-		log.Printf("Rollback failed %s", err)
-	}
+	db.CloseRows(r)
 }

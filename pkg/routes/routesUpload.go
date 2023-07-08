@@ -98,7 +98,9 @@ func sendResponse(w http.ResponseWriter, uR uploadResponse) {
 	jsString, err := json.Marshal(uR)
 	if err != nil {
 		log.Printf("Could not marshal struct %s", err)
+		jsString = []byte("{}")
 	}
+
 	_, err = io.WriteString(w, string(jsString))
 	if err != nil {
 		log.Printf("Could not send response %s", err)
@@ -121,9 +123,8 @@ func getRandomPathName() (string, string) {
 	dirPathChild := "./storage/" + pathParts[0] + "/" + pathParts[1]
 	filePath := "./storage/" + pathParts[0] + "/" + pathParts[1] + "/" + pathParts[2]
 
-	ok, err := models.IsPathOk(filePath)
-	if !ok {
-		log.Printf("Already exists or an error occured: %s", err)
+	if !models.IsPathOk(filePath) {
+		log.Printf("WARN: Path not ok, regenerating...")
 		return getRandomPathName()
 	}
 
@@ -139,9 +140,8 @@ func createRandomId(length int, fileExt string) string {
 		str += "." + fileExt
 	}
 
-	ok, err := models.IsFileIdOk(str)
-	if !ok {
-		log.Printf("Already exists or an error occured: %s", err)
+	if !models.IsFileIdOk(str) {
+		log.Printf("WARN: id not ok, regenerating...")
 		return createRandomId(length, fileExt)
 	}
 

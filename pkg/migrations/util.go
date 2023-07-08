@@ -5,6 +5,9 @@ import (
 	"sort"
 )
 
+// reading all files from a directory
+//
+// returns a list of files or error if reading fails
 func getFiles(dir string) ([]string, error) {
 	files, err := os.ReadDir(dir)
 	if err != nil {
@@ -23,6 +26,9 @@ func getFiles(dir string) ([]string, error) {
 	return filenames, nil
 }
 
+// reading all directories from given path
+//
+// returns a list of directories or error if reading fails
 func getDirs(dir string) ([]string, error) {
 	files, err := os.ReadDir(dir)
 	if err != nil {

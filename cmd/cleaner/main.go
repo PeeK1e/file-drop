@@ -23,7 +23,7 @@ func main() {
 		return
 	}
 
-	ticker := time.Ticker{C: time.Tick(10 * time.Minute)}
+	ticker := time.Ticker{C: time.Tick(1 * time.Minute)}
 
 	sigChannel := make(chan os.Signal, 1)
 	signal.Notify(sigChannel, syscall.SIGINT, syscall.SIGTERM)
@@ -32,19 +32,23 @@ func main() {
 	http.HandleFunc("/healthz", routes.Healthz)
 	go startHttpServer(*c.HttpServer.ListenAddress)
 
-	select {
-	case <-ticker.C:
-		models.RemoveExpiredFiles()
-	case <-sigChannel:
-		log.Print("Caught shutdown signal. Terminating.")
-		return
+	for {
+		select {
+		case <-ticker.C:
+			log.Printf("INFO: Starting cleaner...")
+			models.RemoveExpiredFiles()
+			log.Printf("INFO: Done.")
+		case <-sigChannel:
+			log.Print("INFO: Caught shutdown signal. Terminating.")
+			return
+		}
 	}
 }
 
 func startHttpServer(addr string) {
 	err := http.ListenAndServe(addr, nil)
 	if err != nil {
-		log.Printf("HTTP Server error, %s", err)
+		log.Printf("ERR: HTTP Server error, %s", err)
 		os.Exit(500)
 	}
 }

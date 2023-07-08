@@ -18,13 +18,11 @@ func Run() {
 	version, err := queryVersion()
 	if err != nil {
 		log.Fatalf("ERR: no version detected %s", err)
-		return
 	}
 
 	dirs, err := getDirs("./upgrade-db")
 	if err != nil {
 		log.Fatalf("ERR: Opening directory %s", err)
-		return
 	}
 
 	runScripts(version, dirs)

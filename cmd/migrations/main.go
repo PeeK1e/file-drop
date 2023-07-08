@@ -17,9 +17,9 @@ func main() {
 		os.Exit(1)
 	}
 
-	log.Printf("Running Database Migrations...")
+	log.Printf("INFO: Running Database Migrations...")
 
 	migrations.Run()
 
-	log.Printf("Done! :)")
+	log.Printf("INFO: Done! :)")
 }

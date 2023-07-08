@@ -18,12 +18,12 @@ const (
 
 func main() {
 
-	log.Println("STARTING UP")
+	log.Println("INFO: Starting Server")
 
 	// creating directory if non existent
 	err := os.Mkdir(storagePath, 0764)
 	if err != nil {
-		log.Printf("Not creating directory, %s", err)
+		log.Printf("WARN: Not creating directory, %s", err)
 	}
 
 	c := config.NewConfig()
@@ -43,13 +43,13 @@ func main() {
 	signal.Notify(sigChannel, syscall.SIGINT, syscall.SIGTERM)
 
 	<-sigChannel
-	log.Print("Caught shutdown signal. Terminating.")
+	log.Print("INFO: Caught shutdown signal. Terminating.")
 }
 
 func startHttpServer(addr string) {
 	err := http.ListenAndServe(addr, nil)
 	if err != nil {
-		log.Printf("HTTP Server error, %s", err)
+		log.Printf("ERR: HTTP Server error, %s", err)
 		os.Exit(500)
 	}
 }
