@@ -1,27 +1,42 @@
 package models
 
 import (
-	"errors"
 	"fmt"
 
 	"gitlab.com/PeeK1e/file-drop/pkg/db"
 )
 
 func GetFileByID(id string) (name string, path string, err error) {
-	instance := db.GetInstance()
-
 	statement := `SELECT "filename", "path" FROM file WHERE "keyid" LIKE $1`
-
-	result, err := instance.Query(statement, id)
+	r, err := db.RunQueryWithResult([]byte(statement), id)
 	if err != nil {
-		return "", "", fmt.Errorf("couldn't exect query %s", err)
+		return "", "", err
 	}
+	defer db.CloseRows(r)
 
-	defer result.Close()
-	for result.Next() {
+	for r.Next() {
 		filename, filepath := "", ""
-		err = result.Scan(&filename, &filepath)
+		err = r.Scan(&filename, &filepath)
 		return filename, filepath, err
 	}
-	return "", "", errors.New("no such result")
+	return "", "", fmt.Errorf("no such result")
+}
+
+func CreateChallenge(id string) (string, bool, error) {
+	statement := `SELECT "secret_sha", "is_encrypted" FROM file WHERE "keyid" LIKE $1`
+	r, err := db.RunQueryWithResult([]byte(statement), id)
+	if err != nil {
+		return "", false, err
+	}
+	defer db.CloseRows(r)
+
+	for r.Next() {
+		sha, enc := "", false
+		err = r.Scan(&sha, &enc)
+		if err != nil {
+			return "", false, err
+		}
+		return sha, enc, nil
+	}
+	return "", false, fmt.Errorf("no such result")
 }

@@ -18,13 +18,15 @@
     </div>
     <div class="file-input">
       <i class="cloud-upload"></i>
-      <i for="file">Pick File or Drag And Drop</i>
+      <i for="form_file">Pick File or Drag And Drop</i>
     </div>
     <div id="progress-area"></div>
   </div>
   
-  <form>
-    <input id="file" type="file" name="file">
+  <form id="form">
+    <input id="form_filename" type="text" name="fileName" value="">
+    <input id="form_file" type="file" name="file_select">
+    <input id="form_encrypt" type="checkbox" name="isEnc" checked="true">
   </form>
 </body>
 

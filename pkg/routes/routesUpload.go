@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"gitlab.com/PeeK1e/file-drop/pkg/models"
+	"gitlab.com/PeeK1e/file-drop/pkg/util"
 )
 
 type uploadResponse struct {
@@ -24,6 +25,23 @@ const (
 
 func UploadFile(w http.ResponseWriter, r *http.Request) {
 	r.ParseMultipartForm(1000000000)
+
+	encryptedFile := false
+	if str := r.FormValue("isEnc"); str != "" {
+		encryptedFile = true
+	}
+
+	fSha := r.FormValue("sha")
+	if fSha == "" && encryptedFile {
+		sendResponse(w, uploadResponse{
+			Reason: "Encryption has broken parameters",
+			Ok:     false,
+			FileID: "",
+		})
+		return
+	}
+
+	// open transmitted file
 	tFile, fileHeader, err := r.FormFile("file")
 
 	log.Printf("New File Upload %s", fileHeader.Filename)
@@ -72,7 +90,7 @@ func UploadFile(w http.ResponseWriter, r *http.Request) {
 		id = createRandomId(10, "")
 	}
 
-	err = models.SaveFile(id, fileHeader.Filename, filePath)
+	err = models.SaveFile(id, fileHeader.Filename, filePath, encryptedFile, fSha)
 	if err != nil {
 		log.Printf("Error Saving File to DB %s,", err)
 		sendResponse(w, uploadResponse{
@@ -132,10 +150,7 @@ func getRandomPathName() (string, string) {
 }
 
 func createRandomId(length int, fileExt string) string {
-	str := ""
-	for i := 0; i < length; i++ {
-		str += string(letters[rand.Intn(len(letters))])
-	}
+	str := util.GetRandomString(length)
 	if fileExt != "" {
 		str += "." + fileExt
 	}

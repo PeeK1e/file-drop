@@ -4,7 +4,7 @@
     font-family: 'Poppins';
     font-style: normal;
     font-weight: 400;
-    src: url('../fonts/Poppins-Regular.ttf') format('ttf'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+    src: url('./fonts/Poppins-Regular.ttf') format('ttf'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
   }
   
   /* poppins-italic - latin */
@@ -13,7 +13,7 @@
     font-family: 'Poppins';
     font-style: italic;
     font-weight: 400;
-    src: url('../fonts/Poppins-Thin.ttf') format('tff'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+    src: url('./fonts/Poppins-Thin.ttf') format('tff'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
   }
   
   /* poppins-Bold - latin */
@@ -22,6 +22,6 @@
     font-family: 'Poppins';
     font-style: bold;
     font-weight: 400;
-    src: url('../fonts/Poppins-Bold.ttf') format('tff'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+    src: url('./fonts/Poppins-Bold.ttf') format('tff'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
   }
   

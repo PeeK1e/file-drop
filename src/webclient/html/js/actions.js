@@ -1,6 +1,6 @@
-any(".file-input").on('click', ev => me(any("#file")).click());
+any(".file-input").on('click', ev => me(any("#form_file")).click());
 
-any("#file").on("change", ev => fileHandler(ev));
+any("#form_file").on("change", ev => fileHandler(ev));
 
 any(".file-input").on("dragover", ev => halt(ev));
 
@@ -11,7 +11,7 @@ function dropHandler(ev) {
     if (ev.dataTransfer.items[0].kind === 'file') {
       let dT = new DataTransfer();
       dT.items.add(ev.dataTransfer.items[0].getAsFile())
-      me("#file").files = dT.files
+      me("#form_file").files = dT.files
       uploadFile(dT.files[0].name)
     }
   } else {
@@ -38,18 +38,32 @@ function fileHandler(ev) {
       let splitName = fileName.split('.');
       fileName = splitName[0].substring(0, 16) + "... ." + splitName[1];
     }
-    uploadFile(fileName);
+    uploadFile(fileName, file);
   }
 }
 
-function uploadFile(name) {
+async function uploadFile(name, f) {
   let fileName = name;
   let fileSize;
+  let file = f;
+  let data = new FormData(me(any("form")));
+
+  if (me(any("#form_encrypt")).checked) {
+    let { encryptedFile, sha, key, iv } = await encryptFile(file);
+    console.log('Key:', key);
+    console.log('IV:', iv);
+    data.append('file', new Blob([encryptedFile]), fileName);
+    data.append('sha', sha)
+    data.append('isEnc', true)
+  } else {
+    data.append('file', file, fileName);
+  }
+
   let xhr = new XMLHttpRequest(); //AJAX request
   xhr.open("POST", "/upload"); //sending post request to the specified URL
   xhr.onreadystatechange = function () {
     if (xhr.readyState === 4) {
-      callback(xhr.responseText, fileName, fileSize);
+      callback(xhr.responseText, fileName, (me(any("#form_encrypt")).checked));
     }
   }
 
@@ -70,13 +84,11 @@ function uploadFile(name) {
     }
   });
 
-  let data = new FormData(me(any("form")));
   xhr.send(data);
 }
 
-function callback(string, fileName, fileSize) {
+function callback(string, fileName, encrypted) {
   let jsonStr = JSON.parse(string)
-  let uploadedHTML;
   console.log(jsonStr)
 
   element = createElement("div");
@@ -84,7 +96,12 @@ function callback(string, fileName, fileSize) {
   me(any("#progress-area")).prepend(element);
 
   if (jsonStr.Ok === true) {
-    let link = "http://" + location.host + "/pv/" + jsonStr.fileID;
+    let link = ""
+    if (encrypted) {
+      link = "http://" + location.host + "/enc/" + jsonStr.fileID;
+    } else {
+      link = "http://" + location.host + "/pv/" + jsonStr.fileID;
+    }
     var qrcode = new QRious({
       value: link
     })
@@ -102,4 +119,21 @@ function callback(string, fileName, fileSize) {
                             <span class="error">Upload Failed: ${jsonStr.reason}</span>
                           </div>`;
   }
+}
+
+async function encryptFile(file) {
+  let arrayBuffer = await file.arrayBuffer();
+  let key = await window.crypto.subtle.generateKey({ name: 'AES-GCM', length: 256 }, true, ['encrypt', 'decrypt']);
+  let iv = window.crypto.getRandomValues(new Uint8Array(12));
+  let encryptedFile = await window.crypto.subtle.encrypt({ name: 'AES-GCM', iv: iv }, key, arrayBuffer);
+  
+  let exportedKey = await window.crypto.subtle.exportKey("jwk", key);
+  let exportedKeySha = await window.crypto.subtle.digest("SHA-512", exportedKey.k);
+  
+  return {
+    encryptedFile,
+    key: exportedKey.k,
+    sha: exportedKeySha,
+    iv: Array.from(iv).join(',')
+  };
 }

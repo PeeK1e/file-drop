@@ -23,7 +23,6 @@ services:
 
   postgres:
     image: docker.io/postgres:15.2-alpine
-    #image: localhost/postgres-template
     environment:
       POSTGRES_PASSWORD:  "s3cr3t!"
       POSTGRES_USER:  "postgres"

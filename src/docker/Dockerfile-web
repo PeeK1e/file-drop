@@ -1,5 +1,4 @@
 FROM nginx:1.22-alpine AS web
-
 ARG USER=nginx
 
 # Add new user
@@ -17,6 +16,9 @@ RUN mkdir -p /var/run && \
 # Make cache dir writable
 RUN mkdir -p /var/cache/nginx/ &&\
     chown $USER:$USER -R /var/cache/nginx/
+
+FROM web AS live
+ARG USER=nginx
 
 # Copy web files 
 COPY ["./src/webclient/html", "/usr/share/nginx/html"]
