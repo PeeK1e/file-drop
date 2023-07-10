@@ -22,7 +22,7 @@ func GetFileByID(id string) (name string, path string, err error) {
 	return "", "", fmt.Errorf("no such result")
 }
 
-func CreateChallenge(id string) (string, bool, error) {
+func GetEncryptionDetails(id string) (string, bool, error) {
 	statement := `SELECT "secret_sha", "is_encrypted" FROM file WHERE "keyid" LIKE $1`
 	r, err := db.RunQueryWithResult([]byte(statement), id)
 	if err != nil {

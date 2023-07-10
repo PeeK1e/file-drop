@@ -126,14 +126,20 @@ async function encryptFile(file) {
   let key = await window.crypto.subtle.generateKey({ name: 'AES-GCM', length: 256 }, true, ['encrypt', 'decrypt']);
   let iv = window.crypto.getRandomValues(new Uint8Array(12));
   let encryptedFile = await window.crypto.subtle.encrypt({ name: 'AES-GCM', iv: iv }, key, arrayBuffer);
-  
+
   let exportedKey = await window.crypto.subtle.exportKey("jwk", key);
-  let exportedKeySha = await window.crypto.subtle.digest("SHA-512", exportedKey.k);
-  
+  let exportedKeySha = await window.crypto.subtle.digest("SHA-512", new TextEncoder().encode(exportedKey.k));
+  console.log(exportedKeySha)
+  console.log(buf2hex(exportedKeySha))
+
   return {
     encryptedFile,
     key: exportedKey.k,
     sha: exportedKeySha,
     iv: Array.from(iv).join(',')
   };
+}
+
+function buf2hex(buffer) { // buffer is an ArrayBuffer
+  return Array.prototype.map.call(new Uint8Array(buffer), x => ('00' + x.toString(16)).slice(-2)).join('');
 }

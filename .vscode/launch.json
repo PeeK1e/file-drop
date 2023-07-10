@@ -9,13 +9,13 @@
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "${workspaceFolder}/cmd/migrations/main.go",
+            "program": "${workspaceFolder}/cmd/server/main.go",
             "args": [
-                "-H localhost",
-                "-P password",
-                "-N postgres"
-            ],
-            "cwd": "${workspaceFolder}/pkg/migrations"
+                "--listen=0.0.0.0:9091",
+                "-P s3cr3t!",
+                "-N postgres",
+                "-H 127.0.0.1"
+            ]
         }
     ]
 }

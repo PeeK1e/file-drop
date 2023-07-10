@@ -7,12 +7,12 @@ require (
 	github.com/lib/pq v1.10.9
 )
 
+require golang.org/x/sys v0.6.0 // indirect
+
 require (
 	github.com/alecthomas/units v0.0.0-20211218093645-b94a6e3cc137 // indirect
 	github.com/gobwas/httphead v0.1.0 // indirect
 	github.com/gobwas/pool v0.2.1 // indirect
-	github.com/gobwas/ws v1.2.1 // indirect
-	github.com/klauspost/compress v1.10.3 // indirect
+	github.com/gobwas/ws v1.2.1
 	github.com/xhit/go-str2duration/v2 v2.1.0 // indirect
-	nhooyr.io/websocket v1.8.7 // indirect
 )

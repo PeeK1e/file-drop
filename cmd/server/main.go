@@ -34,6 +34,7 @@ func main() {
 	}
 
 	http.HandleFunc("/pv/", routes.DownloadFile)
+	http.HandleFunc("/challenge", routes.DownloadEncryptedFile)
 	http.HandleFunc("/upload", routes.UploadFile)
 	http.HandleFunc("/healthz", routes.Healthz)
 
