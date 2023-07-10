@@ -37,7 +37,7 @@ func RunTransactionWithResult(q []byte, args ...any) (*sql.Rows, error) {
 	return r, nil
 }
 
-func RunQueryWithResult(q []byte, args ...any) (*sql.Rows, error) {
+func QueryWithResult(q []byte, args ...any) (*sql.Rows, error) {
 	r, err := db.Query(string(q), args...)
 	if err != nil {
 		return nil, err

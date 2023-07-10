@@ -2,8 +2,6 @@ package routes
 
 import (
 	"crypto/sha512"
-	"encoding/hex"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
@@ -20,7 +18,7 @@ func DownloadFile(w http.ResponseWriter, r *http.Request) {
 
 	log.Printf("Client %s requested FileID %s", r.RemoteAddr, id)
 
-	_, path, err := models.GetFileByID(id)
+	_, path, err := models.FileByID(id)
 	if err != nil {
 		log.Printf("Couldn't retrieve Database Entry %s", err)
 		http.Error(w, "File not found", http.StatusNotFound)
@@ -45,24 +43,20 @@ func DownloadFile(w http.ResponseWriter, r *http.Request) {
 }
 
 func DownloadEncryptedFile(w http.ResponseWriter, r *http.Request) {
-	id := strings.Replace(r.RequestURI, "/enc/", "", -1)
-	log.Printf("Client %s requested FileID %s", r.RemoteAddr, id)
+	//id := strings.Replace(r.RequestURI, "/enc/", "", -1)
+	log.Printf("Client %s requested encrypted file", r.RemoteAddr)
 
 	wsChallenge(w, r)
-
-	//conn.Write(file.)
-
-	//http.ServeContent(w, r, path, fileStat.ModTime(), file)
 }
 
-func getEncFile(id string) (string, string) {
-	sha, isEnc, err := models.GetEncryptionDetails(id)
+func shaForID(id string) (string, string) {
+	sha, isEnc, err := models.EncryptionDetails(id)
 	if !isEnc || err != nil {
 		log.Printf("ERR: file doesn't look encrypted, aborting...")
 		return "", ""
 	}
 
-	_, path, err := models.GetFileByID(id)
+	_, path, err := models.FileByID(id)
 	if err != nil {
 		log.Printf("Couldn't retrieve Database Entry %s", err)
 		//http.Error(w, "File not found", http.StatusNotFound)
@@ -92,7 +86,7 @@ func wsChallenge(w http.ResponseWriter, r *http.Request) {
 	}
 	log.Printf("DEBUG: file id: %s // %s", fileID, string(fileID))
 
-	pwSha, filePath := getEncFile(string(fileID))
+	pwSha, filePath := shaForID(string(fileID))
 	if pwSha == "" {
 		log.Printf("ERR: Could not open file")
 		return
@@ -116,23 +110,18 @@ func wsChallenge(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	strChallengeResp := hex.EncodeToString(challengeResp)
-	strChallenge := hex.EncodeToString(challengeSha)
-
-	log.Printf("Server challenge: %s, Client Response %s", string(strChallenge), string(strChallengeResp))
-
 	if string(challengeResp) != string(challengeSha) {
 		log.Printf("WARN: Client response not matching with server challenge")
 		return
 	}
 
-	fileData, err := ioutil.ReadFile(filePath)
+	fileData, err := os.ReadFile(filePath)
 	if err != nil {
 		log.Println(err)
 		return
 	}
 
-	err = wsutil.WriteServerMessage(conn, ws.OpBinary, []byte(fileData))
+	err = wsutil.WriteServerMessage(conn, ws.OpBinary, fileData)
 	if err != nil {
 		log.Printf("ERR: WS write stream broken")
 		return

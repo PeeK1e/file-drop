@@ -23,7 +23,7 @@ var config Config = Config{
 			String(),
 		PORT: kingpin.
 			Flag("db-port", "Database Host").
-			Short('p').
+			Short('P').
 			Envar("FD_DB_PORT").
 			Default("5432").
 			String(),
@@ -35,7 +35,7 @@ var config Config = Config{
 			String(),
 		PASSWORD: kingpin.
 			Flag("db-password", "Database Password").
-			Short('P').
+			Short('p').
 			Envar("FD_DB_PASSWORD").
 			Default("s3cr3t!").
 			String(),

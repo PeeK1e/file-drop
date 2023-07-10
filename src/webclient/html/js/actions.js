@@ -44,16 +44,24 @@ function fileHandler(ev) {
 
 async function uploadFile(name, f) {
   let fileName = name;
-  let fileSize;
+  let encodedData;
   let file = f;
   let data = new FormData(me(any("form")));
 
   if (me(any("#form_encrypt")).checked) {
-    let { encryptedFile, sha, key, iv } = await encryptFile(file);
+    let { encryptedFile, key, sha, iv, base64 } = await encryptFile(file);
+
+    encodedData = base64;
+
+    // debug info
     console.log('Key:', key);
     console.log('IV:', iv);
+    console.log('SHA512 (DECODED):', buf2hex(sha));
+    console.log('SHA512:', sha);
+    console.log('b64:', base64);
+
     data.append('file', new Blob([encryptedFile]), fileName);
-    data.append('sha', sha)
+    data.append('sha', new Blob([sha]))
     data.append('isEnc', true)
   } else {
     data.append('file', file, fileName);
@@ -63,7 +71,7 @@ async function uploadFile(name, f) {
   xhr.open("POST", "/upload"); //sending post request to the specified URL
   xhr.onreadystatechange = function () {
     if (xhr.readyState === 4) {
-      callback(xhr.responseText, fileName, (me(any("#form_encrypt")).checked));
+      callback(xhr.responseText, fileName, (me(any("#form_encrypt")).checked), encodedData);
     }
   }
 
@@ -87,7 +95,7 @@ async function uploadFile(name, f) {
   xhr.send(data);
 }
 
-function callback(string, fileName, encrypted) {
+function callback(string, fileName, encrypted, b64) {
   let jsonStr = JSON.parse(string)
   console.log(jsonStr)
 
@@ -98,7 +106,7 @@ function callback(string, fileName, encrypted) {
   if (jsonStr.Ok === true) {
     let link = ""
     if (encrypted) {
-      link = "http://" + location.host + "/enc/" + jsonStr.fileID;
+      link = "http://" + location.host + "/dec.html?id=" + jsonStr.fileID;
     } else {
       link = "http://" + location.host + "/pv/" + jsonStr.fileID;
     }
@@ -109,6 +117,7 @@ function callback(string, fileName, encrypted) {
                           <div class="uploaded-file-info">
                             <span>${fileName}</span>
                             <span><a href="${link}">${link}</a></span>
+                            <spane${b64}</span>
                           </div>
                           <div class="qrcode">
                             <img src="${qrcode.toDataURL()}"/>
@@ -122,24 +131,30 @@ function callback(string, fileName, encrypted) {
 }
 
 async function encryptFile(file) {
-  let arrayBuffer = await file.arrayBuffer();
-  let key = await window.crypto.subtle.generateKey({ name: 'AES-GCM', length: 256 }, true, ['encrypt', 'decrypt']);
-  let iv = window.crypto.getRandomValues(new Uint8Array(12));
-  let encryptedFile = await window.crypto.subtle.encrypt({ name: 'AES-GCM', iv: iv }, key, arrayBuffer);
+  let fileBuffer = await file.arrayBuffer();
 
-  let exportedKey = await window.crypto.subtle.exportKey("jwk", key);
-  let exportedKeySha = await window.crypto.subtle.digest("SHA-512", new TextEncoder().encode(exportedKey.k));
-  console.log(exportedKeySha)
-  console.log(buf2hex(exportedKeySha))
+  // key generation
+  let encKey = await window.crypto.subtle.generateKey({ name: 'AES-GCM', length: 256 }, true, ['encrypt', 'decrypt']);
+  let iv = window.crypto.getRandomValues(new Uint8Array(12));
+  let exportedKey = await window.crypto.subtle.exportKey("jwk", encKey);
+
+  let encryptedFile = await window.crypto.subtle.encrypt({ name: 'AES-GCM', iv: iv }, encKey, fileBuffer);
+
+  let keyBuffer = new TextEncoder("utf-8").encode(exportedKey.k)
+  let keySha = await window.crypto.subtle.digest("SHA-512", keyBuffer);
+  let decodedKeySha = buf2hex(keySha)
+
+  console.debug("SHA (decoded):", decodedKeySha)
+  console.debug("KEY:", exportedKey.k)
+
+  //base64 encode "password"
+  let encodedData = btoa(JSON.stringify({ key: exportedKey, iv: iv }))
 
   return {
-    encryptedFile,
-    key: exportedKey.k,
-    sha: exportedKeySha,
-    iv: Array.from(iv).join(',')
+    encryptedFile: encryptedFile,
+    key: keyBuffer,
+    sha: keySha,
+    iv: Array.from(iv).join(','),
+    base64: encodedData
   };
-}
-
-function buf2hex(buffer) { // buffer is an ArrayBuffer
-  return Array.prototype.map.call(new Uint8Array(buffer), x => ('00' + x.toString(16)).slice(-2)).join('');
 }

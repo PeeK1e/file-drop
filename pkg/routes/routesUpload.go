@@ -26,13 +26,23 @@ const (
 func UploadFile(w http.ResponseWriter, r *http.Request) {
 	r.ParseMultipartForm(1000000000)
 
-	encryptedFile := false
+	formIsEncrypted := false
 	if str := r.FormValue("isEnc"); str != "" {
-		encryptedFile = true
+		formIsEncrypted = true
 	}
 
-	fSha := r.FormValue("sha")
-	if fSha == "" && encryptedFile {
+	formSha512, _, err := r.FormFile("sha")
+	if err != nil {
+		sendResponse(w, uploadResponse{
+			Reason: "Encryption has broken parameters",
+			Ok:     false,
+			FileID: "",
+		})
+		return
+	}
+
+	sha512, err := io.ReadAll(formSha512)
+	if err != nil {
 		sendResponse(w, uploadResponse{
 			Reason: "Encryption has broken parameters",
 			Ok:     false,
@@ -90,7 +100,7 @@ func UploadFile(w http.ResponseWriter, r *http.Request) {
 		id = createRandomId(10, "")
 	}
 
-	err = models.SaveFile(id, fileHeader.Filename, filePath, encryptedFile, fSha)
+	err = models.SaveFile(id, fileHeader.Filename, filePath, formIsEncrypted, util.ArrayBufferToString(sha512))
 	if err != nil {
 		log.Printf("Error Saving File to DB %s,", err)
 		sendResponse(w, uploadResponse{

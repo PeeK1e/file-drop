@@ -5,14 +5,39 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Launch Package",
+            "name": "Launch API",
             "type": "go",
             "request": "launch",
             "mode": "auto",
             "program": "${workspaceFolder}/cmd/server/main.go",
             "args": [
-                "--listen=0.0.0.0:9091",
-                "-P s3cr3t!",
+                "--listen=:8081",
+                "-p s3cr3t!",
+                "-N postgres",
+                "-H 127.0.0.1"
+            ]
+        },
+        {
+            "name": "Launch Migrations",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/cmd/migrations/main.go",
+            "args": [
+                "-p s3cr3t!",
+                "-N postgres",
+                "-H 127.0.0.1"
+            ],
+            "cwd": "${workspaceFolder}/pkg/migrations"
+        },
+        {
+            "name": "Launch Cleaner",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/cmd/cleaner/main.go",
+            "args": [
+                "-p s3cr3t!",
                 "-N postgres",
                 "-H 127.0.0.1"
             ]

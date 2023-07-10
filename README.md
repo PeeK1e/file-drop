@@ -56,10 +56,10 @@ The format is short-flag, long-flag and it's default value, description and the 
 Flags:
   -l, --listen="0.0.0.0:8080"  HTTP Listen Address ($FD_HTTP_ADDRESS)
   -H, --db-host="postgres"     Database Host ($FD_DB_HOST)
-  -p, --db-port="5432"         Database Host ($FD_DB_PORT)
-  -U, --db-user="postgres"     Database User ($FD_DB_USER)
-  -P, --db-password="s3cr3t!"  Database Password ($FD_DB_PASSWORD)
+  -P, --db-port="5432"         Database Host ($FD_DB_PORT)
   -N, --db-name="postgresdb"   Database Name ($FD_DB_NAME)
+  -U, --db-user="postgres"     Database User ($FD_DB_USER)
+  -p, --db-password="s3cr3t!"  Database Password ($FD_DB_PASSWORD)
   -S, --db-ssl-mode=disable    Database SSL Mode ($FD_DB_SSL_MODE)
   -R, --db-connect-retry=5     Database connection retry count ($FD_DB_RETRY)
 ```
