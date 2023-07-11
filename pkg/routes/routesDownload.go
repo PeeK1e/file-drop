@@ -2,13 +2,12 @@ package routes
 
 import (
 	"crypto/sha512"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"strings"
 
-	"github.com/gobwas/ws"
-	"github.com/gobwas/ws/wsutil"
 	"gitlab.com/PeeK1e/file-drop/pkg/models"
 	"gitlab.com/PeeK1e/file-drop/pkg/util"
 )
@@ -43,12 +42,67 @@ func DownloadFile(w http.ResponseWriter, r *http.Request) {
 }
 
 func DownloadEncryptedFile(w http.ResponseWriter, r *http.Request) {
+	//?needs refactoring later
 	//id := strings.Replace(r.RequestURI, "/enc/", "", -1)
 	log.Printf("Client %s requested encrypted file", r.RemoteAddr)
 
 	wsChallenge(w, r)
 }
 
+// opens a websocket and creates the challenge for the client to calculate
+func wsChallenge(w http.ResponseWriter, r *http.Request) {
+	// opens websocket, if fails returns HTTP error code
+	// like required by the RFC
+	sock := &socket{}
+	if !sock.NewSocket(w, r) {
+		return
+	}
+
+	defer sock.Close()
+
+	var fileID string
+	if ok := sock.ReadClientData(&fileID); !ok {
+		log.Printf("ERR: WS read stream broken")
+		return
+	}
+
+	log.Printf("DEBUG: file id: %s // %s", fileID, string(fileID))
+
+	path, challenge, challengeSha, err := createChallengeKey(string(fileID))
+	if err != nil {
+		log.Printf("ERR: Could not retrieve file %s", err)
+		return
+	}
+
+	if ok := sock.WriteMessage(challenge); !ok {
+		log.Printf("ERR: WS write stream broken")
+		return
+	}
+
+	var challengeResp string
+	if ok := sock.ReadClientData(&challengeResp); !ok {
+		log.Printf("ERR: WS read stream broken")
+		return
+	}
+
+	if challengeResp != string(challengeSha) {
+		log.Printf("WARN: Client response not matching with server challenge")
+		return
+	}
+
+	fileData, err := os.ReadFile(path)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	if ok := sock.WriteBytes(fileData); !ok {
+		log.Printf("ERR: WS write stream broken")
+		return
+	}
+}
+
+// retrieves the sha and path for an file id
 func shaForID(id string) (string, string) {
 	sha, isEnc, err := models.EncryptionDetails(id)
 	if !isEnc || err != nil {
@@ -66,30 +120,14 @@ func shaForID(id string) (string, string) {
 	return sha, path
 }
 
-// func wsChallenge(w http.ResponseWriter, r *http.Request, file *os.File, sha string) {
-func wsChallenge(w http.ResponseWriter, r *http.Request) {
-	conn, _, _, err := ws.UpgradeHTTP(r, w)
-	if err != nil {
-		log.Printf("ERR: Could not upgrade HTTP connection to WS %s", err)
-		return
-	}
-	defer func() {
-		if err := conn.Close(); err != nil {
-			log.Printf("WARN: WS clean close failed %s", err)
-		}
-	}()
-
-	fileID, _, err := wsutil.ReadClientData(conn)
-	if err != nil {
-		log.Printf("ERR: WS read stream broken")
-		return
-	}
-	log.Printf("DEBUG: file id: %s // %s", fileID, string(fileID))
-
+// this creates the challenge key and retrieves informationm about the file
+//
+// returns the file path, the challenge, challenge SHA512
+// returns an error if the file ID couldn't be found
+func createChallengeKey(fileID string) (string, string, []byte, error) {
 	pwSha, filePath := shaForID(string(fileID))
 	if pwSha == "" {
-		log.Printf("ERR: Could not open file")
-		return
+		return "", "", []byte(""), fmt.Errorf("ERR: Could not open file")
 	}
 
 	//create challenge
@@ -98,36 +136,5 @@ func wsChallenge(w http.ResponseWriter, r *http.Request) {
 	sha_512.Write([]byte(pwSha + challenge))
 	challengeSha := sha_512.Sum(nil)
 
-	err = wsutil.WriteServerMessage(conn, ws.OpText, []byte(challenge))
-	if err != nil {
-		log.Printf("ERR: WS write stream broken")
-		return
-	}
-
-	challengeResp, _, err := wsutil.ReadClientData(conn)
-	if err != nil {
-		log.Printf("ERR: WS read stream broken")
-		return
-	}
-
-	if string(challengeResp) != string(challengeSha) {
-		log.Printf("WARN: Client response not matching with server challenge")
-		return
-	}
-
-	fileData, err := os.ReadFile(filePath)
-	if err != nil {
-		log.Println(err)
-		return
-	}
-
-	err = wsutil.WriteServerMessage(conn, ws.OpBinary, fileData)
-	if err != nil {
-		log.Printf("ERR: WS write stream broken")
-		return
-	}
-}
-
-func CreateChallengeKey() (string, string) {
-	return "", ""
+	return filePath, challenge, challengeSha, nil
 }
