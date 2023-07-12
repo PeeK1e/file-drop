@@ -42,6 +42,7 @@ func (s *socket) WriteBytes(b []byte) bool {
 // reads from websocket and returns data as []byte ok if operation succeded
 func (s *socket) ReadClientData(m *string) bool {
 	data, opcode, err := wsutil.ReadClientData(s.C)
+
 	if err != nil {
 		log.Printf("WARN: Read message failed: %s", err)
 		return false

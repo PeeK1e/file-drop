@@ -42,8 +42,6 @@ func DownloadFile(w http.ResponseWriter, r *http.Request) {
 }
 
 func DownloadEncryptedFile(w http.ResponseWriter, r *http.Request) {
-	//?needs refactoring later
-	//id := strings.Replace(r.RequestURI, "/enc/", "", -1)
 	log.Printf("Client %s requested encrypted file", r.RemoteAddr)
 
 	wsChallenge(w, r)

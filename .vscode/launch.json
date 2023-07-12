@@ -11,7 +11,7 @@
             "mode": "auto",
             "program": "${workspaceFolder}/cmd/server/main.go",
             "args": [
-                "--listen=:8081",
+                "--listen=:8080",
                 "-p s3cr3t!",
                 "-N postgres",
                 "-H 127.0.0.1"

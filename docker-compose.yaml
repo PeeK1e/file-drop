@@ -77,14 +77,3 @@ services:
       - postgres
     networks:
       - fdnet
-
-  web_service:
-    image: docker.io/peek1e/file-web:v2.2.0
-    restart: unless-stopped
-    tmpfs:
-      - /var/run/:rw
-    depends_on:
-      - file_drop
-      - file_migration
-    networks:
-      - fdnet

@@ -5,4 +5,4 @@ Dockerfile
 .gitignore
 .psql-init-scripts/
 hack/**
-src/
+src/docker

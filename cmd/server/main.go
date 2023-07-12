@@ -33,6 +33,11 @@ func main() {
 		return
 	}
 
+	fsRoot := http.FileServer(http.Dir("./static/upload"))
+	fsDecr := http.FileServer(http.Dir("./static/decrypt"))
+
+	http.Handle("/", fsRoot)
+	http.Handle("/enc", http.StripPrefix("/enc", fsDecr))
 	http.HandleFunc("/pv/", routes.DownloadFile)
 	http.HandleFunc("/challenge", routes.DownloadEncryptedFile)
 	http.HandleFunc("/upload", routes.UploadFile)

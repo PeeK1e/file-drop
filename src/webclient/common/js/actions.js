@@ -106,7 +106,7 @@ function callback(string, fileName, encrypted, b64) {
   if (jsonStr.Ok === true) {
     let link = ""
     if (encrypted) {
-      link = "http://" + location.host + "/dec.html?id=" + jsonStr.fileID;
+      link = "http://" + location.host + "/enc?id=" + jsonStr.fileID;
     } else {
       link = "http://" + location.host + "/pv/" + jsonStr.fileID;
     }
